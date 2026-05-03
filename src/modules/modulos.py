@@ -6,7 +6,6 @@ Parte estrutural para definição dos módulos da base Marciana.
 Define a estrutura da base em solo e comportamente de cada módulo.
 '''
 
-
 class Modulo:
     """
     Representa um módulo físico da base.
