@@ -97,7 +97,7 @@ class Colonia:
         '''
         if capacidade == 0:
             return 0.0
-        return (self.energia_diponivel_total() / capacidade) * 100
+        return (self.energia_disponivel_total() / capacidade) * 100
     def consumo_total(self) -> int:
         '''Soma o consumo apenas dos módulos que estão ligadis.'''
         return sum(m.consumo for m in self.modulos if m.status) #Aqui é legal pois ele retorna o consumo somente se o status tiver ligado.
