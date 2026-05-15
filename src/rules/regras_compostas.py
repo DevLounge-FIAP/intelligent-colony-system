@@ -20,7 +20,7 @@ def verificar_colonia (estado: Colonia) -> list[dict]:
         -tipo: "ALERTA", "SUGESTAO" ou "INFORMAÇÃO";
         -mensagem: string descritiva para o operador;
         -prioridade: 1(crítica), 2 (importante) ou 3(sugestão);
-        -origem: "regras_compostas.py".
+        -origem: "regras.py".
     '''
 
     recomendacoes = []
@@ -44,7 +44,7 @@ def verificar_colonia (estado: Colonia) -> list[dict]:
             "tipo": ACAO_SUGESTAO, 
             "mensagem": f"Energia solar não está sendo produzida. Utilize sistema de energia eólica.",
             "prioridade": PRIORIDADE_SUGESTAO,
-            "origem": "regras_compostas"
+            "origem": "regras"
         })
 
     # --- Sem produção de energia eólica ---
@@ -53,7 +53,7 @@ def verificar_colonia (estado: Colonia) -> list[dict]:
             "tipo": ACAO_SUGESTAO, 
             "mensagem": f"Energia eólica não está sendo produzida. Utilize sistema de energia solar.",
             "prioridade": PRIORIDADE_SUGESTAO,
-            "origem": "regras_compostas"
+            "origem": "regras"
         })
 
     # --- Sem produção de nenhum tipo de energia ---
@@ -63,19 +63,36 @@ def verificar_colonia (estado: Colonia) -> list[dict]:
             "tipo": ACAO_SUGESTAO, 
             "mensagem": f"Energia eólica e energia solar não estão sendo produzidas. Utilize reserva de energia: {capacidade_reserva:.1f}%.",
             "prioridade": PRIORIDADE_SUGESTAO,
-            "origem": "regras_compostas"
+            "origem": "regras"
+        })
+        
+    # --- Regra 2: Excedente de produção de energia ---
+    if energia_disp > 50 and consumo < 30 and capacidade_reserva < 49:
+        recomendacoes.append({
+            "tipo": ACAO_SUGESTAO,
+            "mensagem": "Excedente de energia detectado. Armazenar na reserva.",
+            "prioridade": PRIORIDADE_SUGESTAO,
+            "origem": "regras"            
         })
 
-    # --- Regra 2: Alto consumo e pouca energia --- 
+    # --- Regra 3: Excedente de energia total---
+    if energia_disp > 99 and capacidade_reserva > 49:
+        recomendacoes.append({
+            "tipo": ACAO_SUGESTAO,
+            "mensagem": "Excedente de energia detectado. Parar produção de energias eólica e solar.",
+            "prioridade": PRIORIDADE_SUGESTAO,
+            "origem": "regras"            
+        })
+    # --- Regra 4: Alto consumo e pouca energia --- 
     if energia_disp <= 30 and consumo >= energia_disp *0.5:
         recomendacoes.append({
             "tipo": ACAO_ALERTA,
             "mensagem": f"Consumo ({consumo}%) maior que a energia disponível ({energia_disp}%). Risco de apagão. \n\tDesligue todos os módulos de baixa e média criticidade: {nomes_desligaveis}",
             "prioridade": PRIORIDADE_CRITICA,
-            "origem": "regras_compostas"            
+            "origem": "regras"            
         })
     
-    # --- Regra 3: Baixa produção de energia e baixa reserva de energia --- 
+    # --- Regra 5: Baixa produção de energia e baixa reserva de energia --- 
     if radiacao_solar < 10 and vento < 10 and energia_perc < 50:
         modulos_baixa_critic = [m for m in estado.modulos if m.status and m.criticidade <= 2] #identifica os módulos de baixa criticidade
         nomes_baixa_critic = ", ".join(m.id_nome for m in modulos_baixa_critic)
@@ -84,16 +101,25 @@ def verificar_colonia (estado: Colonia) -> list[dict]:
             "mensagem": f"""A energia disponível está em atenção. 
                             Recomenda-se desligar os módulos de baixa criticidade: {nomes_baixa_critic}""",
             "prioridade": PRIORIDADE_SUGESTAO,
-            "origem": "regras_compostas"            
+            "origem": "regras"            
         })
     
-    # --- Regra 4: Ligar módulos ---
+    # --- Regra 6: Ligar módulos ---
     if energia_disp > 50 and modulos_desligados: 
         recomendacoes.append({
             "tipo": ACAO_SUGESTAO,
             "mensagem": f"Níveis de energia normalizados. Recomenda-se ligar todos os módulos: {modulos_desligados}",
             "prioridade": PRIORIDADE_SUGESTAO,
-            "origem": "regras_compostas"            
+            "origem": "regras"            
+        })
+
+    # --- Regra 7: Situação estavel ---
+    if not recomendacoes:   # Aqui verifica se tem algo dentro de recomendacoes se não tiver faz isso
+        recomendacoes.append({
+            "tipo": ACAO_SUGESTAO,
+            "mensagem": "SISTEMA ESTÁVEL: Energia e consumo dentro dos parâmetros normais.",
+            "prioridade": PRIORIDADE_SUGESTAO,
+            "origem": "regras"
         })
 
     return recomendacoes
