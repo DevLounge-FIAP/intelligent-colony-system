@@ -1,3 +1,4 @@
+
 from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -6,7 +7,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from modules.modulos import Colonia
-
 
 
 def historico_dados_eolica(): #Criação da função que irá armazenar os dados históricos de criação de energia eólica.
@@ -80,7 +80,8 @@ def previsao_energia_solar(radiacao_solar): #Criação da função que irá prev
  return energia_gerada
 
 
-def plotar_grafico_eolica():
+def plotar_grafico_historico_eolica():
+ """Função para criar a visualização do gráfico com base nos dados históricos criados para a energia eólica e energia solar, utilizando a biblioteca matplotlib"""
  nome, velocidade_vento, energia_gerada = historico_dados_eolica()
  a, b = regressao_eolica()
 
@@ -92,7 +93,7 @@ def plotar_grafico_eolica():
  plt.scatter(velocidade_vento, energia_gerada, zorder=3) # <- Declara o eixo X (causa) e o eixo Y (efeito) 
  plt.plot(x_reta, y_reta, zorder=2) # <- Plota a reta de regressão linear utilizando os dados históricos de criação de energia eólica.
  for x, y in zip(velocidade_vento,energia_gerada):
-  plt.annotate(f"{y}kWh", (x,y), textcoords="offset points",fontsize = 6, xytext=(0,10), ha='center') # <- Adiciona anotações aos pontos do gráfico para mostrar o valor de energeria gerada (y = causa).
+  plt.annotate(f"{y:.2f} kWh", (x,y), textcoords="offset points",fontsize = 6, xytext=(0,10), ha='center') # <- Adiciona anotações aos pontos do gráfico para mostrar o valor de energeria gerada (y = causa).
  plt.xlabel("Velocidade do Vento (m/s)") # Nomeia o eixo X
  plt.ylabel("Energia Gerada (unidades)") # Nomeia o eixo Y
  plt.title(f"Energia {nome} Gerada vs Velocidade do Vento") # Nomeia o gráfico
@@ -100,7 +101,8 @@ def plotar_grafico_eolica():
  plt.show() # <- Exibe o gráfico
 
 
-def plotar_grafico_solar():
+def plotar_grafico_historico_solar():
+
  nome, radiacao_solar, energia_gerada = historico_dados_solar()
  a, b = regressao_solar()
 
@@ -110,7 +112,7 @@ def plotar_grafico_solar():
  plt.scatter(radiacao_solar, energia_gerada, zorder = 3) # <- Declara o eixo X (causa) e o eixo Y (efeito) 
  plt.plot(x_reta, y_reta, zorder = 2) # <- Plota a reta de regressão linear utilizando os dados históricos de criação de energia solar.
  for x, y in zip(radiacao_solar, energia_gerada):
-  plt.annotate(f"{y}kWh", (x,y), textcoords="offset points",fontsize = 6, xytext=(0,10), ha='center')
+  plt.annotate(f"{y:.2f} kWh", (x,y), textcoords="offset points",fontsize = 6, xytext=(0,10), ha='center')
  plt.xlabel("Radiação Solar (%)") # Nomeia o eixo X
  plt.ylabel("Energia Gerada (unidades)") # Nomeia o eixo Y
  plt.title(f"Energia {nome} Gerada vs Radiação Solar") # Nomeia o gráfico
@@ -119,3 +121,42 @@ def plotar_grafico_solar():
  plt.show() # <- Exibe o gráfico
 
  
+def plotar_grafico_previsao_eolica(vento_atual):
+ 
+ energia_prevista = previsao_energia_eolica(vento_atual) # <- Chama a função de previsão de energia eólica para obter o valor previsto de energia gerada com base na velocidade do vento atual.
+ 
+ a, b = regressao_eolica()
+
+ x_reta = np.linspace(0, 30, 100) # <- Cria um espaçamento de 100 pontos para o gráfico ficar mais legível e estético 
+ y_reta = a * x_reta + b # <- Calcula os valores utilizando a fórmula da regressão linear grau 1 
+
+ plt.plot(x_reta, y_reta, zorder = 2) # <- Plota a reta de regressão linear utilizando os dados históricos de criação de energia eólica.
+ plt.scatter(vento_atual, energia_prevista, color='blue', zorder=3) # <- Plota o ponto da previsão atual utilizando a função de previsão criada anteriormente.
+ plt.annotate(f"Previsão: {energia_prevista:.2f} kWh", (vento_atual, energia_prevista), textcoords="offset points",fontsize = 6, xytext=(0,10), ha='center') # <- Adiciona uma anotação ao ponto da previsão para mostrar o valor previsto de energia gerada.
+ plt.xlabel("Velocidade do Vento (m/s)") # Nomeia o eixo X
+ plt.ylabel("Energia Gerada (unidades)") # Nomeia o eixo Y
+ plt.title(f"Previsão de Energia Eólica Gerada vs Velocidade do Vento") # Nomeia o gráfico
+ plt.grid() # <- Adiciona uma grade ao gráfico
+ plt.show() # <- Exibe o gráfico
+
+
+def plotar_grafico_previsao_solar(radiacao_atual):
+ 
+ energia_prevista = previsao_energia_solar(radiacao_atual) # <- Chama a função de previsão de energia solar para obter o valor previsto de energia gerada com base na radiação solar atual.
+   
+ a, b = regressao_solar()
+   
+ x_reta = np.linspace(0, 100, 100) # <- Cria um espaçamento de 100 pontos para o gráfico ficar mais legível e estético 
+ y_reta = a * x_reta + b # <- Calcula os valores utilizando a fórmula da regressão linear grau 1 
+   
+ plt.plot(x_reta, y_reta, zorder = 2) # <- Plota a reta de regressão linear utilizando os dados históricos de criação de energia solar.
+ plt.scatter(radiacao_atual, energia_prevista, color='orange', zorder=3) # <- Plota o ponto da previsão atual utilizando a função de previsão criada anteriormente.
+ plt.annotate(f"Previsão: {energia_prevista:.2f} kWh", (radiacao_atual, energia_prevista), textcoords="offset points",fontsize = 6, xytext=(0,10), ha='center') # <- Adiciona uma anotação ao ponto da previsão para mostrar o valor previsto de energia gerada.
+ plt.xlabel("Radiação Solar (%)") # Nomeia o eixo X
+ plt.ylabel("Energia Gerada (unidades)") # Nomeia o eixo Y
+ plt.title(f"Previsão de Energia Solar Gerada vs Radiação Solar") # Nomeia o gráfico
+ plt.grid() # <- Adiciona uma grade ao gráfico
+ plt.xticks(range(0,101,5))
+ plt.show() # <- Exibe o gráfico
+
+
