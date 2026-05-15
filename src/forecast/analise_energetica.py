@@ -2,7 +2,7 @@ from pathlib import Path
 import sys # <- permissão para importar ou exportar os módulos do código todo
 sys.path.insert(0, str(Path(__file__).parent.parent)) # <- Aquilo de criar pastas a cima do arquivo, para o python saber onde procurar os arquivos e não dar erro
 
-from forecast.previsao import previsao_energia_eolica, previsao_energia_solar
+from forecast.previsao import previsao_energia_eolica, previsao_energia_solar # <- importando as previsões  
 
 from modules.modulos import Colonia # <- importa a classe Colonia do arquivo modulos.py da página modules
 """
@@ -15,7 +15,7 @@ PRIORIDADE_CRITICA = 1
 PRIORIDADE_SUGESTAO = 3
 
 """
-Declaração das variáveis de ação e prioridade para as recomendações geradas pela análise energética. Essas variáveis são usadas para categorizar as recomendações como alertas ou sugestões, e para definir a prioridade de cada recomendação.
+Declaração das variáveis de ação e prioridade para as recomendações geradas pela análise energética.
 """
 
 def analise_energetica_eolica(estado:Colonia):

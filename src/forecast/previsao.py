@@ -1,17 +1,21 @@
-
 from pathlib import Path
 import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent)) 
 
-import matplotlib.pyplot as plt
-import numpy as np
+import matplotlib.pyplot as plt # <- importação do matplot para criação dos gráficos
+import numpy as np # <- importação do numpy
 
-from modules.modulos import Colonia
+from modules.modulos import Colonia # <- importação da classe Colonia
 
+"""
+Importações necessárias para a criação das previsões, histórciso de dados e gráficos 
+"""
 
 def historico_dados_eolica(): #Criação da função que irá armazenar os dados históricos de criação de energia eólica.
  
  """
+ Função criada para armazenar os dados históricos eólicos e ver padrões através deles.
+
  30 = velocidade máxima do vento para geração de energia eólica
  20.00 = capacidade máxima de energia eólica armazenada
  0.66 = a cada 1 m/s de vento, a energia gerada é de 0.66 (20/30) da velocidade do vento, ou seja, 0.66 * velocidade_vento = energia_gerada.
@@ -23,8 +27,7 @@ def historico_dados_eolica(): #Criação da função que irá armazenar os dados
  energia_gerada = [18.48, 7.92, 5.28, 10.56, 13.2, 11.88] # <- a cada 1 m/s de vento, a energia gerada é de 0.66 (20/30) da velocidade do vento, ou seja, 0.66 * velocidade_vento = energia_gerada.
 
  """
- Coloquei os valores de energia_gerada como float, pois a energia nunca é exata, e sim uma aproximação, e o tipo float é mais adequado para representar esse tipo de dado. 
- Mas ainda é coerente com as regras do Aelton, visto que ele apenas limita o máximo do armazenamento em 20 (int), e não ultrapassa esse limite.
+ Coloquei os valores de energia_gerada como float, pois a energia nunca é exata.
  """
  return  nome, velocidade_vento, energia_gerada
 
@@ -32,6 +35,8 @@ def historico_dados_eolica(): #Criação da função que irá armazenar os dados
 def historico_dados_solar(): #Criação da função que irá armazenar os dados históricos de criação de energia solar.
  
  """
+ Função criada para armazenar os dados históricos solares e ver padrões através deles.
+
     100 = radiação solar máxima 
     30.00 = capacidade máxima de energia solar armazenada
     0.3 = a cada 1% de radiação solar, a energia gerada é de 0.3 (30/100) da radiação solar, ou seja, 0.3 * radiacao_solar = energia_gerada.
@@ -45,17 +50,22 @@ def historico_dados_solar(): #Criação da função que irá armazenar os dados 
  
 
 def regressao_eolica():
+ """
+ Função que cria o cálculo e a lógica da regressão eólica
+ """
 
- nome,velocidade_vento, energia_gerada = historico_dados_eolica() # <- Chama a função historico_dados_eolica para obter os dados históricos de criação de energia eólica.
+ nome, velocidade_vento, energia_gerada = historico_dados_eolica() # <- Chama a função historico_dados_eolica para obter os dados históricos de criação de energia eólica.
 
  coeficientes = np.polyfit(velocidade_vento, energia_gerada, 1) # <- chama a função np.polyfit para calcular os coeficientes a (inclinação da reta) e b (ponto de partida da reta) a partir de X (causa) e Y (efeito) 
- 
+ #                             causa              efeito    grau 
 
- return coeficientes[0], coeficientes[1] # <- retorna os coeficientes a e b
+ return coeficientes[0], coeficientes[1] # <- retorna os coeficientes A e b
 
 
 def regressao_solar():
- 
+ """
+ Mesma coisa da regressão eólica
+ """
  nome, radiacao_solar, energia_gerada = historico_dados_solar() 
 
  coeficientes = np.polyfit(radiacao_solar, energia_gerada, 1)
@@ -63,7 +73,11 @@ def regressao_solar():
  return coeficientes[0], coeficientes[1]
 
 
-def previsao_energia_eolica(velocidade_vento): #Criação da função que irá prever a quantidade de energia eólica gerada a partir da velocidade do vento, utilizando os coeficientes a e b obtidos na regressão linear.
+def previsao_energia_eolica(velocidade_vento): 
+ 
+ """
+ Função que irá prever a quantidade de energia eólica gerada a partir da velocidade do vento(historico_dados_eolico), 
+ """
 
  a, b = regressao_eolica()
 
@@ -123,7 +137,7 @@ def plotar_grafico_historico_solar():
  
 def plotar_grafico_previsao_eolica(vento_atual):
  
- energia_prevista = previsao_energia_eolica(vento_atual) # <- Chama a função de previsão de energia eólica para obter o valor previsto de energia gerada com base na velocidade do vento atual.
+ energia_prevista = previsao_energia_eolica(vento_atual) # <- Chama a função previsão de energia eólica para obter o valor previsto de energia gerada com base na velocidade do vento atual.
  
  a, b = regressao_eolica()
 
@@ -142,7 +156,7 @@ def plotar_grafico_previsao_eolica(vento_atual):
 
 def plotar_grafico_previsao_solar(radiacao_atual):
  
- energia_prevista = previsao_energia_solar(radiacao_atual) # <- Chama a função de previsão de energia solar para obter o valor previsto de energia gerada com base na radiação solar atual.
+ energia_prevista = previsao_energia_solar(radiacao_atual) # <- Chama a função previsão de energia solar para obter o valor previsto de energia gerada com base na radiação solar atual.
    
  a, b = regressao_solar()
    
