@@ -3,8 +3,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from modules.modulos import Colonia, Modulo, SistemaSolar, SistemaReserva, SistemaEolico
-from regras_basicas import executar
-from regras_compostas import verificar_colonia
+from regras import verificar_colonia
 
 # Monta cenário de exemplo: energia=40, consumo=70
 col = Colonia()
@@ -17,11 +16,13 @@ col.sistemas.append(SistemaEolico("Torre", capacidade_max=20, geracao_atual=0))
 col.sistemas.append(SistemaReserva("Bateria", capacidade_max=50, carga_atual=20)) #Adicionando o sistema de baterias
 col.vento = 0
 col.radiacao_solar = 40
-acoes = executar(col)
-
-for a in acoes:
-    print(f"[{a['prioridade']}] {a['tipo']}: {a['mensagem']}")
 
 recomendacoes = verificar_colonia(col)
+    
+print("-" * 40)
+print("| ANÁLISES" + " " * 28 + "|")
+print("-" * 40)
 for a in recomendacoes:
-    print(f"[{a['prioridade']}] {a['tipo']}: {a['mensagem']}")
+    texto = f"[{a['prioridade']}] {a['tipo']}: {a['mensagem']}"
+    print(f"| {texto:<36} |")
+print("-" * 40)
