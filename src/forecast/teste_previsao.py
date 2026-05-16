@@ -24,11 +24,11 @@ print(f"Previsão solar (radiação={col.radiacao_solar}): {previsao_energia_sol
 
 # Testa análise energética eólica
 for r in analise_energetica_eolica(col):
-    print(f"[{r['prioridade']}] {r['tipo']}: {r['mensagem']}")
+    print(f"[{r['prioridade']}] {r['tipo']}: {r['mensagem']}")# <- puxa a list append de recomendações
 
 # Testa análise energética solar
 for r in analise_energetica_solar(col):
-    print(f"[{r['prioridade']}] {r['tipo']}: {r['mensagem']}")
+    print(f"[{r['prioridade']}] {r['tipo']}: {r['mensagem']}")# <- puxa a list append de recomendações
 
 # Plota gráficos históricos
 plotar_grafico_historico_eolica()
