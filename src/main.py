@@ -1,0 +1,180 @@
+from modules.modulos import Colonia, Modulo, SistemaSolar, SistemaEolico, SistemaReserva
+from rules.regras import verificar_colonia
+from forecast.previsao import (previsao_energia_eolica, previsao_energia_solar,
+                                plotar_grafico_historico_eolica, plotar_grafico_historico_solar,
+                                plotar_grafico_previsao_eolica, plotar_grafico_previsao_solar)
+import matplotlib.pyplot as plt
+
+colonia = Colonia()
+
+while True:
+    print("===============")
+    print("Menu Principal")
+    print("===============")
+    print("[1] - Modulos")
+    print("[2] - Regras")
+    print("[3] - Previsão")
+    print("[0] - Sair")
+
+#utilização de um match para reduzir o código
+    match input("Escolha:"):
+        case "0":
+            print("Programa encerrado!")
+            break
+        
+        case "1":
+            while True:
+                print("=============")
+                print("Menu Módulos")
+                print("=============")
+                print("[1] - Cadastrar Módulo")
+                print("[2] - Cadastrar Sistema de Energia")
+                print("[3] - Configurar vento e Radiação Solar")
+                print("[4] - Mostrar Módulos Cadastrados")
+                print("[5] - Mostrar Sistemas Cadastrados")
+                print("[0] - Voltar ao menu Principal")
+
+                match input ("Escolha: "):
+                    case "0":
+                        break
+                    case "1":
+                        id_nome = input("ID do Módulo (Exemplo: 'MED-01'): ")
+                        tipo = input("Categoria do módulo (Exemplo: 'Medico'): ")
+                        funcao = input("Descrição da função (Exemplo: 'Suporte à Vida'): ")
+                        criticidade = int(input("Criticidade do Módulo de 1 a 5, onde 1 (pouco essencial) a 5 (insubstituível): "))
+                        consumo = float(input("Energia consumida por hora (valor absoluto): "))
+
+                        novo_modulo = Modulo(id_nome,tipo,funcao,criticidade,consumo)
+                        colonia.modulos.append(novo_modulo)
+                        print(f"O Módulo {id_nome} Foi Cadastrado!")
+
+                    case "2":
+                        print("[1] - Sistema Solar")
+                        print("[2] - Sistema Eólico")
+                        print("[3] - Sistema Reserva")
+
+                        tipo_sistema = input("Tipo do Sistema: ")
+                        nome = input("Nome do Sistema: ")
+                        capacidade_max = int(input("Capacidade maxima do sistema(Exemplo: 60): "))
+                        geracao_atual = int(input("Geração atual do sistema(Exemplo: 30): "))
+
+                        match tipo_sistema:
+                            case "1":
+                                sistema = SistemaSolar(nome,capacidade_max,geracao_atual)
+                            case "2":
+                                sistema = SistemaEolico(nome,capacidade_max,geracao_atual)
+                            case "3":
+                                sistema = SistemaReserva(nome,capacidade_max,geracao_atual)
+                            
+                        colonia.sistemas.append(sistema)
+                        print(f"Sistema {nome} Foi Cadastrado!")
+                    
+                    case "3":
+                        colonia.vento = float(input("Velocidade do vento (km/h) (Exemplo: 20): "))
+                        colonia.radiacao_solar = float(input("Radiação Solar (W/m2) (Exemplo: 45): "))
+                        print("Vento e Radiação Solar Atualizados!")
+                    
+                    case "4":
+                        if not colonia.modulos:
+                            print("Nenhum Módulo Foi Cadastrado!")
+                        else:
+                            for m in colonia.modulos:
+                                print(m)
+
+                            nomes      = [m.id_nome for m in colonia.modulos]
+                            criticas   = [m.criticidade for m in colonia.modulos]
+
+                            ligados    = sum(1 for m in colonia.modulos if m.status)
+                            desligados = len(colonia.modulos) - ligados
+
+                            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+
+                            # Grafico de barras: criticidade de cada modulo
+                            ax1.bar(nomes, criticas, color="steelblue")
+                            ax1.set_title("Criticidade por Modulo")
+                            ax1.set_ylabel("Criticidade (1 a 5)")
+                            ax1.set_ylim(0, 6)
+
+                            for i, valor in enumerate(criticas):
+                                ax1.text(i, valor + 0.1, str(valor), ha="center")
+
+                            ax2.pie(
+                                [ligados, desligados],
+                                labels=["Ligados", "Desligados"],
+                                colors=["green", "red"],
+                                autopct="%1.0f%%"   # mostra a porcentagem de cada fatia
+                            )
+                            ax2.set_title("Status dos Modulos")
+
+                            plt.tight_layout()
+                            plt.show()
+                    
+                    case "5":
+                        if not colonia.sistemas:
+                            print("Nenhum Sistema Foi Cadastrado Ainda!")
+                        else:
+                            for s in colonia.sistemas:
+                                 print(f"{nome} | Tipo: {tipo} | Geração: {geracao_atual} | Max: {capacidade_max}")
+                    case _:
+                        print("Opção Inválida!")
+        case "2":
+            while True:
+                print("============")
+                print("Menu Regras")
+                print("============")
+                print("[1] - Executar Análise de Regras")
+                print("[0] - Voltar")
+
+                match input("Escolha: "):
+                    case "0":
+                        break
+
+                    case "1":
+                        recomendacoes = verificar_colonia(colonia)
+                        for rec in recomendacoes:
+                            print(f"\nTipo: {rec['tipo']}")
+                            print(f"Mensagem: {rec['mensagem']}")
+                            print(f"Prioridade: {rec['prioridade']}")
+                    
+                    case _:
+                        print("Opção Inválida")
+
+        case "3":
+            while True:
+                print("===============")
+                print("MENU PREVISÃO")
+                print("===============")
+                print("1 - Previsão eólica (digitar vento)")
+                print("2 - Previsão solar (digitar radiação)")
+                print("3 - Gráfico histórico eólico")
+                print("4 - Gráfico histórico solar")
+                print("0 - Voltar")
+
+                match input("Escolha: "):
+
+                    case "0":
+                        break
+
+                    case "1":
+                        vento = float(input("Velocidade do vento (0 a 30 m/s): "))
+                        energia = previsao_energia_eolica(vento)
+                        print(f"Previsão de energia eólica: {energia:.2f} kWh")
+                        plotar_grafico_previsao_eolica(vento)
+
+                    case "2":
+                        radiacao = float(input("Radiação solar (0 a 100%): "))
+                        energia = previsao_energia_solar(radiacao)
+                        print(f"Previsão de energia solar: {energia:.2f} kWh")
+                        plotar_grafico_previsao_solar(radiacao)
+
+                    case "3":
+                        plotar_grafico_historico_eolica()
+
+                    case "4":
+                        plotar_grafico_historico_solar()
+
+                    case _:
+                        print("Opção invalida.")
+
+        case _:
+            print("Opção inválida.")
