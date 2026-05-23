@@ -57,18 +57,43 @@ while True:
 
                         tipo_sistema = input("Tipo do Sistema: ")
                         nome = input("Nome do Sistema: ")
-                        capacidade_max = int(input("Capacidade maxima do sistema(Exemplo: 60): "))
-                        geracao_atual = int(input("Geração atual do sistema(Exemplo: 30): "))
-                        if geracao_atual == 0:
-                            print("A geração atual não está sendo produzida!")
+                        if tipo_sistema == "1":
+                            capacidade_maxsol = int(input("Capacidade maxima do sistema(Exemplo: 28, Máximo 30): "))
+                            while capacidade_maxsol < 0 or capacidade_maxsol > 30:
+                                capacidade_maxsol = int(input("Capacidade maxima do sistema(Exemplo: 28, Máximo 30): "))
+                            geracao_atual = int(input("Geração atual do sistema(Exemplo: 30): "))
+                            while geracao_atual < 0 or geracao_atual > capacidade_maxsol:
+                                geracao_atual = int(input("Geração atual do sistema(Exemplo: 30): "))
+                            if geracao_atual == 0:
+                                print("A geração atual não está sendo produzida!")
+
+                        if tipo_sistema == "2":
+                            capacidade_maxeol = int(input("Capacidade maxima do sistema(Exemplo: 15, Máximo 20): "))
+                            while capacidade_maxeol < 0 or capacidade_maxeol > 20:
+                                capacidade_maxeol = int(input("Capacidade maxima do sistema(Exemplo: 15, Máximo 20): "))
+                            geracao_atual = int(input("Geração atual do sistema(Exemplo: 20): "))
+                            while geracao_atual < 0 or geracao_atual > capacidade_maxeol:
+                                geracao_atual = int(input("Geração atual do sistema(Exemplo: 20): "))
+                            if geracao_atual == 0:
+                                print("A geração atual não está sendo produzida!")
+
+                        if tipo_sistema == "3":
+                            capacidade_maxres = int(input("Capacidade maxima do sistema(Exemplo: 45, Máximo 50): "))
+                            while capacidade_maxres < 0 or capacidade_maxres > 50:
+                                capacidade_maxres = int(input("Capacidade maxima do sistema(Exemplo: 45, Máximo 50): "))
+                            geracao_atual = int(input("Geração atual do sistema(Exemplo: 50): "))
+                            while geracao_atual < 0 or geracao_atual > capacidade_maxres:
+                                geracao_atual = int(input("Geração atual do sistema(Exemplo: 50): "))
+                            if geracao_atual == 0:
+                                print("A geração atual não está sendo produzida!")
 
                         match tipo_sistema:
                             case "1":
-                                sistema = SistemaSolar(nome,capacidade_max,geracao_atual)
+                                sistema = SistemaSolar(nome,capacidade_maxsol,geracao_atual)
                             case "2":
-                                sistema = SistemaEolico(nome,capacidade_max,geracao_atual)
+                                sistema = SistemaEolico(nome,capacidade_maxeol,geracao_atual)
                             case "3":
-                                sistema = SistemaReserva(nome,capacidade_max,geracao_atual)
+                                sistema = SistemaReserva(nome,capacidade_maxres,geracao_atual)
                             
                         colonia.sistemas.append(sistema)
                         print(f"Sistema {nome} Foi Cadastrado!")
