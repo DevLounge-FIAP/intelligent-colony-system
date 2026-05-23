@@ -41,10 +41,10 @@ while True:
                         id_nome = input("ID do Módulo (Exemplo: 'MED-01'): ")
                         tipo = input("Categoria do módulo (Exemplo: 'Medico'): ")
                         funcao = input("Descrição da função (Exemplo: 'Suporte à Vida'): ")
-                        criticidade = int(input("Criticidade do Módulo de 1 a 5, onde 1 (pouco essencial) a 5 (insubstituível): "))
+                        criticidade = int(input("Criticidade do Módulo de 1 a 5, onde 1 (pouco essencial) e 5 (insubstituível): "))
                         while criticidade < 1  or criticidade > 5:
-                            criticidade = int(input("Criticidade do Módulo de 1 a 5, onde 1 (pouco essencial) a 5 (insubstituível): "))
-                        consumo = float(input("Energia consumida por hora (valor absoluto, exemplo: 25): "))
+                            criticidade = int(input("Criticidade do Módulo de 1 a 5, onde 1 (pouco essencial) e 5 (insubstituível): "))
+                        consumo = int(input("Energia consumida por hora (valor absoluto, exemplo: 25): "))
 
                         novo_modulo = Modulo(id_nome,tipo,funcao,criticidade,consumo)
                         colonia.modulos.append(novo_modulo)
@@ -58,24 +58,25 @@ while True:
                         tipo_sistema = input("Tipo do Sistema: ")
                         nome = input("Nome do Sistema: ")
                         if tipo_sistema == "1":
-                            capacidade_max = int(input("Capacidade maxima do sistema(Exemplo: 28, Máximo 30): "))
+                            print("Cadastro do Sistema Solar selecionado, prossiga com o cadastro das especificações: ")
+                            capacidade_max = int(input("Capacidade maxima de geração do sistema(Exemplo: 28, Máximo 30): "))
                             while capacidade_max < 0 or capacidade_max > 30:
-                                capacidade_max = int(input("Capacidade maxima do sistema(Exemplo: 28, Máximo 30): "))
-                            geracao_atual = int(input("Geração atual do sistema(Exemplo: 30): "))
+                                capacidade_max = int(input("Capacidade maxima do sistema deve estar entre 1-30. "))
+                            geracao_atual = int(input("Qual a geração atual do sistema (Exemplo: 30): "))
                             while geracao_atual < 0 or geracao_atual > capacidade_max:
-                                geracao_atual = int(input("Geração atual do sistema(Exemplo: 30): "))
+                                geracao_atual = int(input("Geração atual do sistema deve respeitar a capacidade maxima."))
                             if geracao_atual == 0:
-                                print("A geração atual não está sendo produzida!")
+                                print("Não está sendo produzido energia!!!")
 
                         if tipo_sistema == "2":
-                            capacidade_max = int(input("Capacidade maxima do sistema(Exemplo: 15, Máximo 20): "))
+                            capacidade_max = int(input("Capacidade maxima de geração do sistema(Exemplo: 18, Máximo 20): "))
                             while capacidade_max < 0 or capacidade_max > 20:
-                                capacidade_max = int(input("Capacidade maxima do sistema(Exemplo: 15, Máximo 20): "))
-                            geracao_atual = int(input("Geração atual do sistema(Exemplo: 20): "))
+                                capacidade_max = int(input("Capacidade maxima do sistema deve estar entre 1-20. "))
+                            geracao_atual = int(input("Qual a geração atual do sistema (Exemplo: 20): "))
                             while geracao_atual < 0 or geracao_atual > capacidade_max:
-                                geracao_atual = int(input("Geração atual do sistema(Exemplo: 20): "))
+                                geracao_atual = int(input("Geração atual do sistema deve respeitar a capacidade maxima."))
                             if geracao_atual == 0:
-                                print("A geração atual não está sendo produzida!")
+                                print("Não está sendo produzido energia!!!")
 
                         if tipo_sistema == "3":
                             capacidade_max = int(input("Capacidade maxima do sistema(Exemplo: 45, Máximo 50): "))
@@ -143,6 +144,12 @@ while True:
                             print(f"\nTipo: {rec['tipo']}")
                             print(f"Mensagem: {rec['mensagem']}")
                             print(f"Prioridade: {rec['prioridade']}")
+                            if "modulos_ativos" in rec:
+                                ativos = ", ".join(rec["modulos_ativos"]) or "nenhum"
+                                desligados = ", ".join(rec["modulos_desligados"]) or "nenhum"
+                                print(f"Módulos ativos: {ativos}")
+                                print(f"Módulos desligados: {desligados}")
+                                print(f"Energia restante no plano: {rec['energia_restante_modulos']:.2f}")
                     
                     case _:
                         print("Opção Inválida")

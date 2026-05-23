@@ -36,7 +36,7 @@ class Sistema:
         '''
         Args:
             nome: Nome do Sistema.
-            capacidade_max (int): Capacidade maxima do sistema.
+            capacidade_max (int): Capacidade maxima de geração do sistema do sistema.
             geracao_atual (int): Geração atual do sistema.
         '''
         self.nome = nome
@@ -109,3 +109,29 @@ class Colonia:
     def modulos_desligaveis(self) -> list:
         '''Lista de módulos ativos com criticidade < 4 (podem ser delisgados em emergência).'''
         return [m for m in self.modulos if m.status and m.criticidade < 4]
+
+    def modulos_por_prioridade(self) -> tuple[list, list, float]:
+        '''
+        Planeja quais módulos permanecem ativos com base na energia disponível.
+        Mantém os módulos de maior criticidade primeiro e desliga o restante.
+        '''
+        energia_disponivel = self.energia_disponivel_total()
+        modulos_ordenados = sorted(
+            enumerate(self.modulos),
+            key=lambda item: (-item[1].criticidade, item[0])
+        )
+
+        modulos_ativos = []
+        modulos_desligados = []
+        energia_restante = energia_disponivel
+        bloqueado = False
+
+        for _, modulo in modulos_ordenados:
+            if not bloqueado and modulo.consumo <= energia_restante:
+                modulos_ativos.append(modulo)
+                energia_restante -= modulo.consumo
+            else:
+                bloqueado = True
+                modulos_desligados.append(modulo)
+
+        return modulos_ativos, modulos_desligados, energia_restante
