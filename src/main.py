@@ -42,7 +42,9 @@ while True:
                         tipo = input("Categoria do módulo (Exemplo: 'Medico'): ")
                         funcao = input("Descrição da função (Exemplo: 'Suporte à Vida'): ")
                         criticidade = int(input("Criticidade do Módulo de 1 a 5, onde 1 (pouco essencial) a 5 (insubstituível): "))
-                        consumo = float(input("Energia consumida por hora (valor absoluto): "))
+                        while criticidade < 1  or criticidade > 5:
+                            criticidade = int(input("Criticidade do Módulo de 1 a 5, onde 1 (pouco essencial) a 5 (insubstituível): "))
+                        consumo = float(input("Energia consumida por hora (valor absoluto, exemplo: 25): "))
 
                         novo_modulo = Modulo(id_nome,tipo,funcao,criticidade,consumo)
                         colonia.modulos.append(novo_modulo)
@@ -57,6 +59,8 @@ while True:
                         nome = input("Nome do Sistema: ")
                         capacidade_max = int(input("Capacidade maxima do sistema(Exemplo: 60): "))
                         geracao_atual = int(input("Geração atual do sistema(Exemplo: 30): "))
+                        if geracao_atual == 0:
+                            print("A geração atual não está sendo produzida!")
 
                         match tipo_sistema:
                             case "1":
@@ -70,8 +74,12 @@ while True:
                         print(f"Sistema {nome} Foi Cadastrado!")
                     
                     case "3":
-                        colonia.vento = float(input("Velocidade do vento (km/h) (Exemplo: 20): "))
-                        colonia.radiacao_solar = float(input("Radiação Solar (W/m2) (Exemplo: 45): "))
+                        colonia.vento = float(input("Velocidade do vento (m/s) [0 a 30] (Exemplo: 20): "))
+                        while colonia.vento < 0 or colonia.vento > 30:
+                            colonia.vento = float(input("Velocidade do vento (m/s) [0 a 30] (Exemplo: 20): "))
+                        colonia.radiacao_solar = float(input("Radiação Solar (%) [0 a 100] (Exemplo: 45): "))
+                        while colonia.radiacao_solar < 0 or colonia.radiacao_solar > 100:
+                            colonia.radiacao_solar = float(input("Radiação Solar (%) [0 a 100] (Exemplo: 45): "))
                         print("Vento e Radiação Solar Atualizados!")
                     
                     case "4":
@@ -83,31 +91,6 @@ while True:
 
                             nomes      = [m.id_nome for m in colonia.modulos]
                             criticas   = [m.criticidade for m in colonia.modulos]
-
-                            ligados    = sum(1 for m in colonia.modulos if m.status)
-                            desligados = len(colonia.modulos) - ligados
-
-                            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
-
-                            # Grafico de barras: criticidade de cada modulo
-                            ax1.bar(nomes, criticas, color="steelblue")
-                            ax1.set_title("Criticidade por Modulo")
-                            ax1.set_ylabel("Criticidade (1 a 5)")
-                            ax1.set_ylim(0, 6)
-
-                            for i, valor in enumerate(criticas):
-                                ax1.text(i, valor + 0.1, str(valor), ha="center")
-
-                            ax2.pie(
-                                [ligados, desligados],
-                                labels=["Ligados", "Desligados"],
-                                colors=["green", "red"],
-                                autopct="%1.0f%%"   # mostra a porcentagem de cada fatia
-                            )
-                            ax2.set_title("Status dos Modulos")
-
-                            plt.tight_layout()
-                            plt.show()
                     
                     case "5":
                         if not colonia.sistemas:
@@ -157,12 +140,16 @@ while True:
 
                     case "1":
                         vento = float(input("Velocidade do vento (0 a 30 m/s): "))
+                        while vento < 0 or vento > 30:
+                            vento = float(input("Velocidade do vento (0 a 30 m/s): "))
                         energia = previsao_energia_eolica(vento)
                         print(f"Previsão de energia eólica: {energia:.2f} kWh")
                         plotar_grafico_previsao_eolica(vento)
 
                     case "2":
                         radiacao = float(input("Radiação solar (0 a 100%): "))
+                        while radiacao < 0 or radiacao > 100:
+                            radiacao = float(input("Radiação solar (0 a 100%): "))
                         energia = previsao_energia_solar(radiacao)
                         print(f"Previsão de energia solar: {energia:.2f} kWh")
                         plotar_grafico_previsao_solar(radiacao)
