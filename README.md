@@ -1,9 +1,3 @@
-Entendi o erro. Ao tentar converter para o padrão do GitHub (com hashtags `#` e tabelas em Markdown), a formatação original que você digitou foi perdida e algumas quebras de linha foram ignoradas pelo renderizador.
-
-Abaixo está **exatamente o seu texto original**, sem apagar nenhuma linha, barra `====` ou separador `----`. A única diferença é que adicionei blocos de código (````text`) ao redor dos diagramas, tabelas ASCII e saídas de terminal. Assim, o GitHub vai preservar seus alinhamentos e não vai juntar os parágrafos.
-
-Copie o bloco abaixo:
-
 ```markdown
 ======================================================================
 🏗️ SICE - SISTEMA INTELIGENTE DE CONTROLE ENERGÉTICO DE COLÔNIAS
