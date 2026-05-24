@@ -1,8 +1,4 @@
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent.parent))
-from modules.modulos import Colonia
+from ..modules.modulos import Colonia
 
 
 ACAO_ALERTA = "ALERTA"
@@ -85,11 +81,12 @@ def verificar_colonia (estado: Colonia) -> list[dict]:
             "prioridade": PRIORIDADE_SUGESTAO,
             "origem": "regras"            
         })
+
     # --- Regra 4: Alto consumo e pouca energia --- 
-    if energia_disp <= 30 and consumo >= energia_disp *0.5:
+    if energia_disp <= 30 and consumo >= energia_disp * 0.5:
         recomendacoes.append({
             "tipo": ACAO_ALERTA,
-            "mensagem": f"Consumo ({consumo}%) maior que a energia disponível ({energia_disp}%). Risco de apagão. \n\tDesligue os módulos menos prioritários: {nomes_desligados}",
+            "mensagem": f"Consumo ({consumo:.2f} kWh) maior que energia disponível ({energia_disp:.2f} kWh).",
             "prioridade": PRIORIDADE_CRITICA,
             "origem": "regras"            
         })
@@ -121,7 +118,7 @@ def verificar_colonia (estado: Colonia) -> list[dict]:
         })
 
     # --- Regra 7: Situação estavel ---
-    if not recomendacoes:   # Aqui verifica se tem algo dentro de recomendacoes se não tiver faz isso
+    if not recomendacoes:
         recomendacoes.append({
             "tipo": ACAO_SUGESTAO,
             "mensagem": "SISTEMA ESTÁVEL: Energia e consumo dentro dos parâmetros normais.",
@@ -145,9 +142,3 @@ def verificar_colonia (estado: Colonia) -> list[dict]:
     })
 
     return recomendacoes
-
-
-
-    
-        
-
