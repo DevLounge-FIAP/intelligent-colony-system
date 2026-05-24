@@ -70,7 +70,7 @@ class Colonia:
     def __init__(self):
         self.modulos = [] #Lista de objetos Módulo
         self.sistemas = [] #Lista de sistemas (Solar, Eolico e Reserva)
-        self.vento = 0 #Velocidade do Vento
+        self.vento = 0.0 #Velocidade do Vento
         self.radiacao_solar = 0 #Irradiância Solar
 
 #--------------------- Métodos de consulta ------------------
