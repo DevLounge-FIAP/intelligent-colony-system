@@ -70,7 +70,7 @@ O projeto separa responsabilidades em cinco frentes coordenadas pelo programa pr
 │ • Hierarquia    │  │   de decisão │  │   históricos   │  │ • Diagramas │
 │   Sistema/Solar/│  │ • ALERTAS,   │  │ • Regressão    │  │ • Guias de  │
 │   Eolico/Reserva│  │   SUGESTÕES  │  │   linear       │  │   uso       │
-│ • Classe Colonia│  │   e INFORMAÇÃO│  │ • Gráficos     │  │             │
+│ • Classe Colonia│  │  e INFORMAÇÃO│  │ • Gráficos     │  │             │
 │   (contexto)    │  │ • Prioridades│  │   matplotlib   │  │             │
 │                 │  │   1, 2 e 3   │  │ • Análise de   │  │             │
 │                 │  │              │  │   suficiência  │  │             │
