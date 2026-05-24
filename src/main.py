@@ -3,21 +3,21 @@ from rules.regras import verificar_colonia
 from forecast.previsao import (previsao_energia_eolica, previsao_energia_solar,
                                 plotar_grafico_historico_eolica, plotar_grafico_historico_solar,
                                 plotar_grafico_previsao_eolica, plotar_grafico_previsao_solar)
-import matplotlib.pyplot as plt
+from forecast.analise_energetica import analise_energetica_eolica, analise_energetica_solar
 
 colonia = Colonia()
+telemetria_configurada = False
 
 while True:
     print("===============")
     print("Menu Principal")
     print("===============")
-    print("[1] - Modulos")
+    print("[1] - Configuração (Módulos, Sistemas e Telemetria)")
     print("[2] - Regras")
     print("[3] - Previsão")
     print("[0] - Sair")
 
-#utilização de um match para reduzir o código
-    match input("Escolha:"):
+    match input("Escolha: "):
         case "0":
             print("Programa encerrado!")
             break
@@ -25,7 +25,7 @@ while True:
         case "1":
             while True:
                 print("=============")
-                print("Menu Módulos")
+                print("Menu Configuração")
                 print("=============")
                 print("[1] - Cadastrar Módulo")
                 print("[2] - Cadastrar Sistema de Energia")
@@ -34,19 +34,26 @@ while True:
                 print("[5] - Mostrar Sistemas Cadastrados")
                 print("[0] - Voltar ao menu Principal")
 
-                match input ("Escolha: "):
+                match input("Escolha: "):
                     case "0":
                         break
+
                     case "1":
                         id_nome = input("ID do Módulo (Exemplo: 'MED-01'): ")
                         tipo = input("Categoria do módulo (Exemplo: 'Medico'): ")
                         funcao = input("Descrição da função (Exemplo: 'Suporte à Vida'): ")
-                        criticidade = int(input("Criticidade do Módulo de 1 a 5, onde 1 (pouco essencial) e 5 (insubstituível): "))
-                        while criticidade < 1  or criticidade > 5:
-                            criticidade = int(input("Criticidade do Módulo de 1 a 5, onde 1 (pouco essencial) e 5 (insubstituível): "))
-                        consumo = int(input("Energia consumida por hora (valor absoluto, exemplo: 25): "))
+                        try:
+                            criticidade = int(input("Criticidade do Módulo de 1 a 5: "))
+                            while criticidade < 1 or criticidade > 5:
+                                criticidade = int(input("Criticidade do Módulo de 1 a 5: "))
+                            consumo = int(input("Energia consumida por hora: "))
+                            while consumo < 0:
+                                consumo = int(input("Consumo deve ser um valor positivo: "))
+                        except ValueError:
+                            print("Entrada inválida. Digite apenas números inteiros.")
+                            continue
 
-                        novo_modulo = Modulo(id_nome,tipo,funcao,criticidade,consumo)
+                        novo_modulo = Modulo(id_nome, tipo, funcao, criticidade, consumo)
                         colonia.modulos.append(novo_modulo)
                         print(f"O Módulo {id_nome} Foi Cadastrado!")
 
@@ -57,76 +64,85 @@ while True:
 
                         tipo_sistema = input("Tipo do Sistema: ")
                         nome = input("Nome do Sistema: ")
-                        if tipo_sistema == "1":
-                            print("Cadastro do Sistema Solar selecionado, prossiga com o cadastro das especificações: ")
-                            capacidade_max = int(input("Capacidade maxima de geração do sistema(Exemplo: 28, Máximo 30): "))
-                            while capacidade_max < 0 or capacidade_max > 30:
-                                capacidade_max = int(input("Capacidade maxima do sistema deve estar entre 1-30. "))
-                            geracao_atual = int(input("Qual a geração atual do sistema (Exemplo: 30): "))
-                            while geracao_atual < 0 or geracao_atual > capacidade_max:
-                                geracao_atual = int(input("Geração atual do sistema deve respeitar a capacidade maxima."))
-                            if geracao_atual == 0:
-                                print("Não está sendo produzido energia!!!")
 
-                        if tipo_sistema == "2":
-                            capacidade_max = int(input("Capacidade maxima de geração do sistema(Exemplo: 18, Máximo 20): "))
-                            while capacidade_max < 0 or capacidade_max > 20:
-                                capacidade_max = int(input("Capacidade maxima do sistema deve estar entre 1-20. "))
-                            geracao_atual = int(input("Qual a geração atual do sistema (Exemplo: 20): "))
-                            while geracao_atual < 0 or geracao_atual > capacidade_max:
-                                geracao_atual = int(input("Geração atual do sistema deve respeitar a capacidade maxima."))
-                            if geracao_atual == 0:
-                                print("Não está sendo produzido energia!!!")
+                        try:
+                            if tipo_sistema == "1":
+                                capacidade_max = int(input("Capacidade maxima de geração do sistema (Max 30): "))
+                                while capacidade_max < 0 or capacidade_max > 30:
+                                    capacidade_max = int(input("Capacidade maxima do sistema deve estar entre 1-30: "))
+                                geracao_atual = int(input("Geração atual do sistema: "))
+                                while geracao_atual < 0 or geracao_atual > capacidade_max:
+                                    geracao_atual = int(input("Geração atual do sistema deve respeitar a capacidade maxima: "))
 
-                        if tipo_sistema == "3":
-                            capacidade_max = int(input("Capacidade maxima do sistema(Exemplo: 45, Máximo 50): "))
-                            while capacidade_max < 0 or capacidade_max > 50:
-                                capacidade_max = int(input("Capacidade maxima do sistema(Exemplo: 45, Máximo 50): "))
-                            geracao_atual = int(input("Geração atual do sistema(Exemplo: 50): "))
-                            while geracao_atual < 0 or geracao_atual > capacidade_max:
-                                geracao_atual = int(input("Geração atual do sistema(Exemplo: 50): "))
-                            if geracao_atual == 0:
-                                print("A geração atual não está sendo produzida!")
+                            elif tipo_sistema == "2":
+                                capacidade_max = int(input("Capacidade maxima de geração do sistema (Max 20): "))
+                                while capacidade_max < 0 or capacidade_max > 20:
+                                    capacidade_max = int(input("Capacidade maxima do sistema deve estar entre 1-20: "))
+                                geracao_atual = int(input("Geração atual do sistema: "))
+                                while geracao_atual < 0 or geracao_atual > capacidade_max:
+                                    geracao_atual = int(input("Geração atual do sistema deve respeitar a capacidade maxima: "))
+
+                            elif tipo_sistema == "3":
+                                capacidade_max = int(input("Capacidade maxima do sistema (Max 50): "))
+                                while capacidade_max < 0 or capacidade_max > 50:
+                                    capacidade_max = int(input("Capacidade maxima do sistema deve estar entre 1-50: "))
+                                geracao_atual = int(input("Geração atual do sistema: "))
+                                while geracao_atual < 0 or geracao_atual > capacidade_max:
+                                    geracao_atual = int(input("Geração atual do sistema deve respeitar a capacidade maxima: "))
+                            else:
+                                print("Opção inválida.")
+                                continue
+                        except ValueError:
+                            print("Entrada inválida. Digite apenas números inteiros.")
+                            continue
 
                         match tipo_sistema:
                             case "1":
-                                sistema = SistemaSolar(nome,capacidade_max,geracao_atual)
+                                sistema = SistemaSolar(nome, capacidade_max, geracao_atual)
                             case "2":
-                                sistema = SistemaEolico(nome,capacidade_max,geracao_atual)
+                                sistema = SistemaEolico(nome, capacidade_max, geracao_atual)
                             case "3":
-                                sistema = SistemaReserva(nome,capacidade_max,geracao_atual)
+                                sistema = SistemaReserva(nome, capacidade_max, geracao_atual)
                             
                         colonia.sistemas.append(sistema)
                         print(f"Sistema {nome} Foi Cadastrado!")
                     
                     case "3":
-                        colonia.vento = float(input("Velocidade do vento (m/s) [0 a 30] (Exemplo: 20): "))
-                        while colonia.vento < 0 or colonia.vento > 30:
-                            colonia.vento = float(input("Velocidade do vento (m/s) [0 a 30] (Exemplo: 20): "))
-                        colonia.radiacao_solar = float(input("Radiação Solar (%) [0 a 100] (Exemplo: 45): "))
-                        while colonia.radiacao_solar < 0 or colonia.radiacao_solar > 100:
-                            colonia.radiacao_solar = float(input("Radiação Solar (%) [0 a 100] (Exemplo: 45): "))
-                        print("Vento e Radiação Solar Atualizados!")
+                        try:
+                            telemetria_configurada = True
+                            colonia.vento = float(input("Velocidade do vento (m/s) [0 a 30]: "))
+                            while colonia.vento < 0 or colonia.vento > 30:
+                                colonia.vento = float(input("Velocidade do vento (m/s) [0 a 30]: "))
+                            colonia.radiacao_solar = float(input("Radiação Solar (%) [0 a 100]: "))
+                            while colonia.radiacao_solar < 0 or colonia.radiacao_solar > 100:
+                                colonia.radiacao_solar = float(input("Radiação Solar (%) [0 a 100]: "))
+                            print("Vento e Radiação Solar Atualizados!")
+                        except ValueError:
+                            telemetria_configurada = False
+                            print("Entrada inválida. Digite apenas números.")
                     
                     case "4":
                         if not colonia.modulos:
-                            print("Nenhum Módulo Foi Cadastrado!")
+                            print("Nenhum Módulo Cadastrado!")
                         else:
                             for m in colonia.modulos:
                                 print(m)
-
-                            nomes      = [m.id_nome for m in colonia.modulos]
-                            criticas   = [m.criticidade for m in colonia.modulos]
                     
                     case "5":
                         if not colonia.sistemas:
-                            print("Nenhum Sistema Foi Cadastrado Ainda!")
+                            print("Nenhum Sistema Cadastrado!")
                         else:
                             for s in colonia.sistemas:
-                                 print(f"{nome} | Tipo: {tipo} | Geração: {geracao_atual} | Max: {capacidade_max}")
+                                print(f"{s.nome} | Tipo: {s.__class__.__name__} | Geração: {s.geracao_atual} kWh | Máx: {s.capacidade_max} kWh")
+
                     case _:
                         print("Opção Inválida!")
+
         case "2":
+            if len(colonia.modulos) < 2 or not colonia.sistemas or not telemetria_configurada:
+                print("ERRO: Cadastre pelo menos 2 módulos, 1 sistema e configure a telemetria no Menu de Configuração antes de prosseguir.")
+                continue
+
             while True:
                 print("============")
                 print("Menu Regras")
@@ -155,35 +171,50 @@ while True:
                         print("Opção Inválida")
 
         case "3":
+            if len(colonia.modulos) < 2 or not colonia.sistemas or not telemetria_configurada:
+                print("ERRO: Cadastre pelo menos 2 módulos, 1 sistema e configure a telemetria no Menu de Configuração antes de prosseguir.")
+                continue
+
             while True:
                 print("===============")
                 print("MENU PREVISÃO")
                 print("===============")
-                print("1 - Previsão eólica (digitar vento)")
-                print("2 - Previsão solar (digitar radiação)")
+                print("1 - Previsão eólica (usar telemetria atual)")
+                print("2 - Previsão solar (usar telemetria atual)")
                 print("3 - Gráfico histórico eólico")
                 print("4 - Gráfico histórico solar")
                 print("0 - Voltar")
 
                 match input("Escolha: "):
-
                     case "0":
                         break
 
                     case "1":
-                        vento = float(input("Velocidade do vento (0 a 30 m/s): "))
-                        while vento < 0 or vento > 30:
-                            vento = float(input("Velocidade do vento (0 a 30 m/s): "))
+                        vento = colonia.vento
                         energia = previsao_energia_eolica(vento)
-                        print(f"Previsão de energia eólica: {energia:.2f} kWh")
+                        print(f"\nVelocidade do Vento Atual: {vento} m/s")
+                        print(f"Previsão de geração eólica: {energia:.2f} kWh")
+                        
+                        print("\n--- Análise de Suficiência Energética (Eólica) ---")
+                        alertas_eolicos = analise_energetica_eolica(colonia)
+                        for r in alertas_eolicos:
+                            print(f"[{r['prioridade']}] {r['tipo']}: {r['mensagem']}")
+                        print("--------------------------------------------------\n")
+                        
                         plotar_grafico_previsao_eolica(vento)
 
                     case "2":
-                        radiacao = float(input("Radiação solar (0 a 100%): "))
-                        while radiacao < 0 or radiacao > 100:
-                            radiacao = float(input("Radiação solar (0 a 100%): "))
+                        radiacao = colonia.radiacao_solar
                         energia = previsao_energia_solar(radiacao)
-                        print(f"Previsão de energia solar: {energia:.2f} kWh")
+                        print(f"\nRadiação Solar Atual: {radiacao}%")
+                        print(f"Previsão de geração solar: {energia:.2f} kWh")
+                        
+                        print("\n--- Análise de Suficiência Energética (Solar) ---")
+                        alertas_solares = analise_energetica_solar(colonia)
+                        for r in alertas_solares:
+                            print(f"[{r['prioridade']}] {r['tipo']}: {r['mensagem']}")
+                        print("-------------------------------------------------\n")
+                        
                         plotar_grafico_previsao_solar(radiacao)
 
                     case "3":
