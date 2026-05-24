@@ -88,32 +88,36 @@ class Colonia:
         Basicamente retorna a capacidade total em porcentagem.
         Exemplo: Se total disponivel = 40 e capacidade total = 100, retorna 40.0 (que é 40 em %)
         '''
-        capacidade = self.capacidade_total() #Aqui é só dizendo que a variavel capacidade é igual a capacidade, fica mais fácil de escrever.
-        '''Poderia ter feito assim:
-        if self.capacidade_total() == 0:
-            return 0.0
-        return (self.energia_disponivel_total() / self.capacidade_total()) * 100
-        Entendeu?? então segue o baile.
-        '''
+        capacidade = self.capacidade_total()
         if capacidade == 0:
             return 0.0
         return (self.energia_disponivel_total() / capacidade) * 100
+
     def consumo_total(self) -> int:
-        '''Soma o consumo apenas dos módulos que estão ligadis.'''
-        return sum(m.consumo for m in self.modulos if m.status) #Aqui é legal pois ele retorna o consumo somente se o status tiver ligado.
+        '''Soma o consumo apenas dos módulos que estão ligados.'''
+        return sum(m.consumo for m in self.modulos if m.status)
     
     def modulos_ligados(self) -> list:
         '''Lista de módulos ativos no momento.'''
-        return [m for m in self.modulos if m.status] #Bom como já diz retorna em uma lista só modulos ligados
+        return [m for m in self.modulos if m.status]
     
     def modulos_desligaveis(self) -> list:
-        '''Lista de módulos ativos com criticidade < 4 (podem ser delisgados em emergência).'''
+        '''Lista de módulos ativos com criticidade < 4 (podem ser desligados em emergência).'''
         return [m for m in self.modulos if m.status and m.criticidade < 4]
 
     def modulos_por_prioridade(self) -> tuple[list, list, float]:
         '''
         Planeja quais módulos permanecem ativos com base na energia disponível.
-        Mantém os módulos de maior criticidade primeiro e desliga o restante.
+        Ordena os módulos por criticidade decrescente e aplica estratégia first-fit:
+        o primeiro módulo que não couber na energia restante encerra a alocação,
+        e todos os subsequentes (mesmo que individualmente coubessem) são marcados
+        como desligados. Isso garante que módulos de maior criticidade sempre
+        tenham prioridade absoluta sobre os de menor criticidade.
+
+        Retorna:
+            modulos_ativos: lista de módulos que permanecem ligados no plano
+            modulos_desligados: lista de módulos a serem desligados
+            energia_restante: energia disponível após alocar os módulos ativos
         '''
         energia_disponivel = self.energia_disponivel_total()
         modulos_ordenados = sorted(
