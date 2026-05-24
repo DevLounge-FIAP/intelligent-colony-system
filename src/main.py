@@ -110,9 +110,9 @@ while True:
                     case "3":
                         try:
                             telemetria_configurada = True
-                            colonia.vento = int(input("Velocidade do vento (m/s) [0 a 30]: "))
+                            colonia.vento = float(input("Velocidade do vento (m/s) [0 a 30]: "))
                             while colonia.vento < 0 or colonia.vento > 30:
-                                colonia.vento = int(input("Velocidade do vento (m/s) [0 a 30]: "))
+                                colonia.vento = float(input("Velocidade do vento (m/s) [0 a 30]: "))
                             colonia.radiacao_solar = int(input("Radiação Solar (%) [0 a 100]: "))
                             while colonia.radiacao_solar < 0 or colonia.radiacao_solar > 100:
                                 colonia.radiacao_solar = int(input("Radiação Solar (%) [0 a 100]: "))
