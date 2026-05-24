@@ -1,0 +1,7 @@
+# Dependências principais do projeto
+# Compatível com Python 3.10+
+numpy>=1.24,<2
+matplotlib>=3.6,<4
+
+# Nota: outras dependências (ex: bibliotecas transitivas) são gerenciadas
+# automaticamente pelo pip ao instalar os pacotes acima.
