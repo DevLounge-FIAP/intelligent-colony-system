@@ -1,8 +1,21 @@
-# 🏗️ SICE — Sistema Inteligente de Controle Energético de Colônias
+# 🛰️ SIGIC — Sistema de Gerenciamento da Infraestrutura da Colônia
 
 **Projeto Acadêmico — FIAP**  
-Documentação Oficial do Sistema de Gestão Energética para Ambientes Extremos  
-**Versão:** 1.0 | **Data:** Maio de 2026 | **Status:** Funcional
+Documentação Oficial do Sistema de Navegação e Análise de Grafos para Colônias em Ambiente Extremo  
+**Versão:** 1.0 | **Data:** Junho de 2026 | **Status:** Funcional
+
+---
+
+## 👥 Equipe
+
+| Integrante | Responsabilidade |
+|---|---|
+| 🔵 **Victor** | Algoritmos de Grafo (BFS, DFS, Dijkstra, Conexões Críticas), Menu Principal e Integração |
+| 🔴 **Michelly** | Estruturas de Dados, Modelagem da Colônia (classes `Modulo` e `Colonia`), Matriz de Adjacências |
+| 🟢 **Bruno** | Modelagem Matemática, Documentação, Sustentabilidade & Governança, README |
+
+> Repositório: [github.com/ChellySantos/Fase-4---FIAP](https://github.com/ChellySantos/Fase-4---FIAP.git)  
+> Arquivo principal de execução: `codigo_fonte.py`
 
 ---
 
@@ -15,111 +28,120 @@ Documentação Oficial do Sistema de Gestão Energética para Ambientes Extremos
 5. [Requisitos e Instalação](#5-requisitos-e-instalação)
 6. [Guia de Uso e Exemplos de Execução](#6-guia-de-uso-e-exemplos-de-execução)
 7. [Estruturas de Dados e Complexidade](#7-estruturas-de-dados-e-complexidade)
-8. [Algoritmos e Modelos Implementados](#8-algoritmos-e-modelos-implementados)
-9. [Motor de Regras de Decisão](#9-motor-de-regras-de-decisão)
-10. [Cenário de Teste Padrão](#10-cenário-de-teste-padrão)
+8. [Algoritmos Implementados](#8-algoritmos-implementados)
+9. [Modelagem Matemática](#9-modelagem-matemática)
+10. [Módulos da Colônia](#10-módulos-da-colônia)
+11. [Sustentabilidade e Governança](#11-sustentabilidade-e-governança)
+12. [Testes Automatizados](#12-testes-automatizados)
 
 ---
 
 ## 1. 🎯 Visão Geral
 
-O SICE (Sistema Inteligente de Controle Energético de Colônias) é um sistema interativo de simulação e tomada de decisão energética para uma colônia instalada em ambiente hostil.
+O SIGIC (Sistema de Gerenciamento da Infraestrutura da Colônia) é um sistema interativo de análise e navegação em grafos para uma colônia instalada em ambiente hostil (Marte).
 
-O sistema monitora o equilíbrio entre geração de energia (solar e eólica), armazenamento em banco de baterias e consumo dos módulos ativos — aplicando um motor de regras para emitir alertas e sugestões operacionais, além de prever a geração futura a partir de modelos de regressão linear ajustados com dados históricos.
+O sistema representa a infraestrutura da colônia como um grafo não-direcionado, onde os nós são os módulos físicos da base (habitação, laboratório, centro de controle, etc.) e as arestas representam as conexões operacionais entre eles. A partir dessa modelagem, o sistema oferece ferramentas para explorar a rede, encontrar rotas eficientes, simular falhas e identificar pontos críticos de vulnerabilidade.
 
-O objeto central é a classe `Colonia`, que agrega todos os módulos, sistemas de energia e parâmetros ambientais, servindo como entrada única para todas as funções de análise e decisão.
+O objeto central é a classe `Colonia`, desenvolvida pela **Michelly**, que agrega todos os módulos e seus atributos, servindo como entrada única para todas as funções de algoritmos e visualização implementadas por **Victor**.
 
 ---
 
 ## 2. ⭐ Características do Sistema
 
-- **Menu Interativo Multi-Nível:** Navegação por três áreas funcionais — Configuração, Regras e Previsão — implementada com `match/case` (Python 3.10+).
+- **Menu Interativo com 9 Opções** *(Victor):* Navegação direta por todas as funcionalidades — visualização, consulta de módulos, execução de algoritmos, simulação de falhas e análise de eficiência — implementada com `match/case` (Python 3.10+).
 
-- **Gestão de Módulos Dinâmica:** O operador cadastra módulos e sistemas de energia em tempo de execução; o estado da colônia é mantido em memória ao longo de toda a sessão através de uma instância única de `Colonia`.
+- **Representação por Grafo** *(Michelly):* A colônia é modelada como uma matriz de adjacências 8×8, com pesos calculados dinamicamente a partir da distância euclidiana entre os módulos, tempo de comunicação e custo energético da transmissão.
 
-- **Motor de 7 Regras Independentes:** Cada ciclo de análise avalia todas as condições em sequência e acumula as recomendações pertinentes, sem interromper a avaliação ao encontrar a primeira ocorrência. Ao final, uma recomendação de `INFORMAÇÃO` com o plano de módulos por prioridade é sempre gerada.
+- **Três Algoritmos de Grafo** *(Victor):* BFS (Busca em Largura), DFS (Busca em Profundidade) e Dijkstra (Caminho Mínimo) — cada um com finalidade distinta e complexidade documentada.
 
-- **Previsão por Regressão Linear:** Modelos ajustados com `numpy.polyfit` sobre séries históricas fornecem previsão pontual de geração eólica (entrada: m/s) e solar (entrada: % de radiação).
+- **Identificação de Conexões Críticas** *(Victor):* Algoritmo de Tarjan baseado em DFS com timestamps que detecta automaticamente todas as arestas cuja remoção tornaria a rede desconexa (pontes do grafo).
 
-- **Visualização Integrada:** Quatro gráficos matplotlib disponíveis no menu de Previsão: histórico eólico, histórico solar, previsão eólica com ponto anotado e previsão solar com ponto anotado.
+- **Simulação de Falhas na Rede** *(Victor):* Testa o impacto da remoção de uma conexão específica ou da desativação de múltiplos módulos simultaneamente, executando BFS para verificar conectividade e restaurando a rede ao estado original ao final.
 
-- **Análise de Suficiência:** Compara automaticamente a energia prevista com o consumo atual da colônia e classifica o resultado como `ALERTA` (insuficiente) ou `SUGESTÃO` (suficiente).
+- **Análise Comparativa de Eficiência** *(Victor):* Exibe lado a lado os resultados de BFS, DFS e Dijkstra para o mesmo par de módulos.
+
+- **Visualização do Mapa** *(Michelly):* Gera um gráfico `matplotlib` com todos os módulos posicionados por coordenadas no espaço 10×10 da colônia, exportando como `Mapa_Colonia.png`.
+
+- **Modelagem Matemática e Documentação** *(Bruno):* Fórmula de peso das arestas, justificativa das estruturas de dados, reflexão sobre sustentabilidade e governança, e documentação oficial do projeto.
 
 ---
 
 ## 3. 🏗️ Arquitetura Modular e Equipe
 
-O projeto separa responsabilidades em cinco frentes coordenadas pelo programa principal:
-
 ```text
 ┌──────────────────────────────────────────────────────────────────────────┐
 │                          PROGRAMA PRINCIPAL                              │
-│                              (main.py)                                   │
-│                             (Bruno)                                      │
-│  - Menu interativo (match/case multi-nível)                              │
-│  - Instância única de Colonia compartilhada entre menus                  │
+│                            (codigo_fonte.py)                             │
+│                          🔵 Victor                                       │
+│  - Menu interativo (match/case com 9 opções)                             │
+│  - Instância única de Colonia compartilhada entre funções                │
 │  - Integração entre os pacotes funcionais                                │
 │  - Tratamento de entradas e validações                                   │
-└──────┬─────────────────────┬──────────────────┬──────────────┬──────────┘
-       │                     │                  │              │
-┌──────▼──────────┐  ┌───────▼──────┐  ┌────────▼───────┐  ┌──▼──────────┐
-│     MÓDULOS     │  │    REGRAS    │  │    PREVISÃO    │  │ DOCUMENTAÇÃO│
-│    (Aelton)     │  │  (Michelly)  │  │    (Victor)    │  │   (Maria)   │
-│                 │  │              │  │                │  │             │
-│ • Classe Modulo │  │ • 7 Regras   │  │ • Dados        │  │ • README    │
-│ • Hierarquia    │  │   de decisão │  │   históricos   │  │ • Diagramas │
-│   Sistema/Solar/│  │ • ALERTAS,   │  │ • Regressão    │  │ • Guias de  │
-│   Eolico/Reserva│  │   SUGESTÕES  │  │   linear       │  │   uso       │
-│ • Classe Colonia│  │  e INFORMAÇÃO│  │ • Gráficos     │  │             │
-│   (contexto)    │  │ • Prioridades│  │   matplotlib   │  │             │
-│                 │  │   1, 2 e 3   │  │ • Análise de   │  │             │
-│                 │  │              │  │   suficiência  │  │             │
-└─────────────────┘  └──────────────┘  └────────────────┘  └─────────────┘
+└──────┬─────────────────────┬──────────────────────────┬──────────────────┘
+       │                     │                          │
+┌──────▼──────────┐  ┌───────▼──────────────┐  ┌───────▼──────────────────┐
+│  MODELAGEM      │  │  ALGORITMOS DE GRAFO │  │  DOCUMENTAÇÃO            │
+│  🔴 Michelly    │  │  🔵 Victor           │  │  🟢 Bruno                │
+│                 │  │                      │  │                          │
+│ • Classe Modulo │  │ • BFS                │  │ • README.md              │
+│ • Classe Colonia│  │ • DFS                │  │ • Modelagem matemática   │
+│ • Métodos de    │  │ • Dijkstra           │  │ • Justificativa das      │
+│   consulta por  │  │ • Conexões Críticas  │  │   estruturas de dados    │
+│   status e      │  │   (Tarjan)           │  │ • Sustentabilidade e     │
+│   prioridade    │  │ • sistema.py         │  │   governança             │
+│ • Mapa visual   │  │ • testes.py          │  │ • rede_colonia.pdf       │
+│   (matplotlib)  │  │                      │  │ • documentacao_          │
+│ • Matriz 8×8    │  │                      │  │   complementar.pdf       │
+│ • Cálculo de    │  │                      │  │                          │
+│   pesos         │  │                      │  │                          │
+└─────────────────┘  └──────────────────────┘  └──────────────────────────┘
 ```
 
-### Atribuições Explícitas
+### Atribuições Detalhadas
 
-**AELTON** — Modelagem e Estruturas de Dados  
-`src/modules/modulos.py` — Classes `Modulo`, `Sistema` e subclasses (`SistemaSolar`, `SistemaEolico`, `SistemaReserva`), além da classe `Colonia` com todos os métodos de consulta de estado.
+**🔵 VICTOR — Algoritmos, Sistema & Main**  
+`src/codigo_fonte.py` — Menu interativo multi-opções, função `selecionar_modulo()` reutilizável, integração entre os pacotes, validações e tratamento de entradas.  
+`src/sistema.py` — Inicialização da colônia com os 8 módulos predefinidos.  
+`src/testes.py` — Bateria de 8 testes automatizados com `assert`.  
+`src/algorithms/algoritmos.py` — Funções `bfs()`, `dfs()`, `dijkstra()` e `conexoes_criticas()`.
 
-**MICHELLY** — Motor de Regras  
-`src/rules/regras.py` — Função `verificar_colonia()` com 7 regras independentes de avaliação do estado energético da colônia.
+**🔴 MICHELLY — Estrutura de Dados & Modelagem da Colônia**  
+`src/modules/modulos.py` — Classes `Modulo` e `Colonia` com todos os atributos e métodos de consulta por status e prioridade.  
+`src/modules/mapa.py` — Matriz de adjacências 8×8, visualização `matplotlib`, cálculo de distância euclidiana e peso das arestas.  
+`src/optimization/modelagem.py` — Estrutura auxiliar de modelagem.
 
-**VICTOR** — Previsão e Análise Energética  
-`src/forecast/previsao.py` — Históricos, regressão linear, previsão pontual e geração de quatro tipos de gráfico.  
-`src/forecast/analise_energetica.py` — Análise de suficiência eólica e solar em relação ao consumo atual.
-
-**BRUNO** — Programa Principal  
-`src/main.py` — Menu interativo multi-nível, integração entre os pacotes, instância única de `Colonia`, validações e tratamento de entradas.
-
-**MARIA** — Documentação  
-`README.md` — Documentação oficial do projeto, diagramas de arquitetura, guias de uso e cenários de teste.
+**🟢 BRUNO — Modelagem Matemática, ESG & Documentação**  
+`README.md` — Documentação oficial completa do projeto.  
+`documentacao_complementar.pdf` — Relatório técnico com modelagem matemática, análise das estruturas de dados, reflexão sobre sustentabilidade e governança.  
+`rede_colonia.pdf` — Diagrama visual da rede da colônia.
 
 ---
 
 ## 4. 📁 Estrutura de Diretórios do Projeto
 
 ```text
-intelligent-colony-system-main/
+Fase-4---FIAP/
 │
 ├── src/                              # Código-fonte principal
-│   ├── main.py                       # Programa principal — menu interativo (Bruno)
+│   ├── codigo_fonte.py               # Programa principal — menu interativo (Victor)
+│   ├── sistema.py                    # Inicialização da Colonia com os 8 módulos (Victor)
+│   ├── testes.py                     # Bateria de testes automatizados (Victor)
 │   │
-│   ├── modules/                      # Camada de Modelagem (Aelton)
+│   ├── modules/                      # Camada de Modelagem (Michelly)
 │   │   ├── __init__.py
-│   │   └── modulos.py                # Classes Modulo, Sistema e Colonia
+│   │   ├── modulos.py                # Classes Modulo e Colonia
+│   │   └── mapa.py                   # Matriz de adjacências, visualização e pesos
 │   │
-│   ├── rules/                        # Motor de Regras (Michelly)
+│   ├── algorithms/                   # Algoritmos de Grafo (Victor)
 │   │   ├── __init__.py
-│   │   └── regras.py                 # Função verificar_colonia() — 7 regras
+│   │   └── algoritmos.py             # BFS, DFS, Dijkstra e Conexões Críticas
 │   │
-│   └── forecast/                     # Previsão Energética (Victor)
+│   └── optimization/                 # Modelagem Auxiliar (Michelly)
 │       ├── __init__.py
-│       ├── previsao.py               # Regressão linear e gráficos
-│       └── analise_energetica.py     # Análise solar e eólica vs consumo
+│       └── modelagem.py
 │
-├── README.md                         # Documentação oficial (Maria)
-└── .gitignore
+├── Mapa_Colonia.png                  # Mapa visual gerado pelo sistema
+└── README.md                         # Documentação oficial (Bruno)
 ```
 
 ---
@@ -128,15 +150,15 @@ intelligent-colony-system-main/
 
 - **Ambiente Operacional:** Windows, macOS ou Linux
 - **Interpretador:** Python 3.10 ou superior (obrigatório para `match/case`)
-- **Dependências Externas:** `matplotlib` e `numpy`
+- **Dependência Externa:** `matplotlib`
 
 ### Passos para Configuração
 
-**1. Clone o repositório do projeto:**
+**1. Clone o repositório:**
 
 ```bash
-git clone https://github.com/DevLounge-FIAP/intelligent-colony-system.git
-cd intelligent-colony-system-main
+git clone https://github.com/ChellySantos/Fase-4---FIAP.git
+cd Fase-4---FIAP
 ```
 
 **2. Crie e ative o ambiente virtual (recomendado):**
@@ -154,7 +176,7 @@ source venv/bin/activate
 **3. Instale as dependências:**
 
 ```bash
-pip install -r requirements.txt
+pip install matplotlib
 ```
 
 ---
@@ -165,287 +187,281 @@ Para iniciar o sistema interativo principal:
 
 ```bash
 cd src
-python main.py
+python codigo_fonte.py
 ```
 
 O terminal exibirá o menu principal:
 
 ```text
-===============
-Menu Principal
-===============
-[1] - Configuração (Módulos, Sistemas e Telemetria)
-[2] - Regras
-[3] - Previsão
-[0] - Sair
+╔══════════════════════════════════════════╗
+║     SIGIC — Sistema de Gerenciamento     ║
+║        da Infraestrutura da Colônia      ║
+╠══════════════════════════════════════════╣
+║  1. Visualizar rede da colônia           ║
+║  2. Consultar módulos                    ║
+║  3. Executar BFS                         ║
+║  4. Executar DFS                         ║
+║  5. Executar Dijkstra                    ║
+║  6. Simular falha na rede                ║
+║  7. Análise de eficiência                ║
+║  8. Identificar conexões críticas        ║
+║  9. Sair                                 ║
+╚══════════════════════════════════════════╝
 ```
 
 ### Fluxo Recomendado de Uso
 
-**Passo 1 — Cadastrar a colônia via menu `[1]`:**
+**Passo 1 — Explorar a rede via `[1]` e `[2]`:**
+- `[1]` Gera o mapa visual com todos os módulos e conexões, salvando em `Mapa_Colonia.png`.
+- `[2]` Lista os 8 módulos com ID, tipo, status e prioridade.
 
-- `[1]` Cadastrar módulos (ID, tipo, função, criticidade 1–5, consumo/h)
-- `[2]` Cadastrar sistemas de energia (Solar máx 30, Eólico máx 20, Reserva máx 50)
-- `[3]` Informar velocidade do vento (0–30, inteiro) e radiação solar (0–100, inteiro)
-- `[4]` Visualizar módulos cadastrados
-- `[5]` Listar sistemas cadastrados
+**Passo 2 — Executar algoritmos via `[3]`, `[4]` e `[5]`:**
+- `[3]` Executa BFS — percorre a rede nível a nível a partir de uma origem.
+- `[4]` Executa DFS — percorre a rede por profundidade (ramo por ramo).
+- `[5]` Executa Dijkstra — encontra o caminho mais eficiente entre dois módulos.
 
-**Passo 2 — Analisar regras via menu `[2]`:**
-
-> Pré-requisitos: pelo menos 2 módulos, 1 sistema e telemetria configurada.
-
-- `[1]` Executa `verificar_colonia()` e imprime recomendações com tipo, prioridade e plano de módulos ativos e desligados por prioridade.
-
-**Passo 3 — Obter previsões via menu `[3]`:**
-
-> Pré-requisitos: pelo menos 2 módulos, 1 sistema e telemetria configurada.
-
-- `[1]` Usa telemetria atual de vento → retorna kWh previstos, executa análise de suficiência energética eólica e abre gráfico.
-- `[2]` Usa telemetria atual de radiação → retorna kWh previstos, executa análise de suficiência energética solar e abre gráfico.
-- `[3]` Exibe gráfico histórico eólico completo.
-- `[4]` Exibe gráfico histórico solar completo.
+**Passo 3 — Analisar resiliência via `[6]`, `[7]` e `[8]`:**
+- `[6]` Simula remoção de conexão ou desativação de módulos e verifica impacto.
+- `[7]` Compara BFS, DFS e Dijkstra lado a lado para o mesmo par de módulos.
+- `[8]` Detecta automaticamente todas as conexões críticas (pontes) da rede.
 
 ### Exemplos de Saída
 
-**Análise de Regras — Vento zerado e radiação ativa:**
-
+**BFS a partir de HAB-01:**
 ```text
-----------------------------------------
-| ANÁLISES                             |
-----------------------------------------
-| [3] SUGESTÃO: Energia eólica não ... |
-|     está sendo produzida. Utilize    |
-|     sistema de energia solar.        |
-| [1] ALERTA: Consumo (90.00 kWh)      |
-|     maior que energia disponível     |
-|     (30.00 kWh).                     |
-----------------------------------------
+📡 BFS a partir de HAB-01:
+HAB-01 → CTR-01 → AGR-01 → MED-01 → ENE-01 → LAB-01 → COM-01 → OXI-01
 ```
 
-**Previsão Eólica — Vento de 15 m/s:**
-
+**Dijkstra de HAB-01 até LAB-01:**
 ```text
-Velocidade do Vento Atual: 15 m/s
-Previsão de geração eólica: 9.90 kWh
-[Gráfico matplotlib exibido em janela separada]
+🛰️ Dijkstra — Caminho mais eficiente de HAB-01 até LAB-01:
+HAB-01 → CTR-01 → LAB-01
+Custo total: 47.83
 ```
 
-**Previsão Solar — Radiação de 70%:**
-
+**Simulação de falha:**
 ```text
-Radiação Solar Atual: 70%
-Previsão de geração solar: 21.00 kWh
-[Gráfico matplotlib exibido em janela separada]
+🔌 Conexão CTR-01 ↔ ENE-01 removida temporariamente.
+✅ Rede ainda conectada — todos os módulos permanecem acessíveis.
+   A conexão CTR-01 ↔ ENE-01 NÃO é crítica.
+🔁 Caminho alternativo: CTR-01 → AGR-01 → ENE-01
+🔧 Conexão CTR-01 ↔ ENE-01 restaurada.
 ```
 
 ---
 
 ## 7. 🧱 Estruturas de Dados e Complexidade
 
-O sistema emprega quatro estruturas de dados com finalidades distintas:
+*(Estruturas definidas por **Michelly** — justificativa redigida por **Bruno**)*
 
 **1. Objeto `Colonia` (Contexto Central)**  
-Agrega em tempo de execução todas as listas de módulos e sistemas, além das variáveis ambientais de vento e radiação solar. É o único parâmetro de entrada das funções de análise e regras. Centraliza o estado da simulação em um único objeto, facilitando a passagem de contexto entre os pacotes.
+Agrega em tempo de execução a lista de módulos e o dicionário de acesso rápido por ID. É o único parâmetro de entrada das funções de algoritmos e visualização. Centraliza o estado da simulação em um único objeto.
 
 **2. Lista de Módulos (`colonia.modulos`)**  
-Armazena os objetos `Modulo` cadastrados pelo operador. Operações: `append()` em O(1) para inserção; iteração O(n) para calcular consumo total e filtrar módulos por status ou criticidade.
+Armazena os objetos `Modulo` em ordem de inserção. Inserção em O(1); iteração O(n) para consultas filtradas por status ou prioridade.
 
-**3. Lista de Sistemas (`colonia.sistemas`)**  
-Armazena os objetos de geração/armazenamento (Solar, Eólico, Reserva). Permite somar `geracao_atual` e `capacidade_max` em O(n).
+**3. Dicionário de Módulos (`colonia.dict_modulos`)**  
+Mapeamento `id_nome → Modulo` para acesso direto em O(1). Usado pelos algoritmos para traduzir nome de módulo em índice da matriz sem iteração.
 
-**4. Lista de Recomendações (retorno de `verificar_colonia`)**  
-Acumula dicionários com as chaves `tipo`, `mensagem`, `prioridade` e `origem`. Cresce dinamicamente conforme as regras são ativadas. Se permanecer vazia após a varredura, a Regra 7 insere a mensagem de sistema estável. A última entrada sempre contém o plano de módulos por prioridade (tipo `INFORMAÇÃO`, prioridade 2), com as chaves adicionais: `modulos_ativos`, `modulos_desligados` e `energia_restante_modulos`.
+**4. Matriz de Adjacências (`matriz_conexoes`) — 8×8**  
+Lista de listas em Python representando as conexões entre módulos. Valor `1` indica conexão direta; `0` indica ausência. Simétrica (grafo não-direcionado). Acesso em O(1); iteração completa em O(V²).
+
+**5. Fila (`collections.deque`)**  
+Empregada no BFS para garantir a ordem FIFO (First-In, First-Out) de exploração nível a nível. Inserção e remoção em O(1).
+
+**6. Pilha (`list` com `pop()`)**  
+Utilizada no DFS para implementar a ordem LIFO (Last-In, First-Out), aprofundando a busca em um ramo antes de retroceder.
+
+**7. Tupla (`tuple`)**  
+Armazena as coordenadas cartesianas `(x, y)` de cada módulo no mapa. Escolha coerente pois as posições dos módulos são imutáveis durante toda a execução.
 
 ### Métodos de Consulta da Classe `Colonia`
 
 ```text
-+---------------------------+----------+----------------------------------+
-| Método                    | Retorno  | Descrição                        |
-+---------------------------+----------+----------------------------------+
-| energia_disponivel_total()| int      | Soma de geracao_atual de todos   |
-|                           |          | os sistemas (inclui reserva)     |
-| capacidade_total()        | int      | Soma de capacidade_max de todos  |
-|                           |          | os sistemas cadastrados          |
-| nivel_energia_percentual()| float    | (disponível / capacidade) × 100  |
-| consumo_total()           | int      | Soma do consumo dos módulos com  |
-|                           |          | status = True (ligados)          |
-| modulos_ligados()         | list     | Módulos com status = True        |
-| modulos_desligaveis()     | list     | Módulos ligados com criticidade  |
-|                           |          | menor que 4                      |
-| modulos_por_prioridade()  | tuple    | (ativos, desligados, energia     |
-|                           |          | restante) — estratégia first-fit |
-|                           |          | por criticidade decrescente      |
-+---------------------------+----------+----------------------------------+
++----------------------------+----------+--------------------------------------+
+| Método                     | Retorno  | Descrição                            |
++----------------------------+----------+--------------------------------------+
+| adicionar_modulo(modulo)   | None     | Insere módulo na lista e no dict     |
+| mapa_modulos()             | dict     | Retorna dict_modulos completo        |
+| modulos_ativo()            | list     | Módulos com status = "ativo"         |
+| modulos_manutencao()       | list     | Módulos com status = "manutencao"    |
+| modulos_alerta()           | list     | Módulos com status = "alerta"        |
+| modulos_inativo()          | list     | Módulos com status = "inativo"       |
+| modulos_alta_prioridade()  | list     | Módulos com prioridade ≤ 2           |
+| modulos_baixa_prioridade() | list     | Módulos com prioridade > 2           |
+| modulos_coordenadas()      | list     | Lista de tuplas (x, y) de cada módulo|
++----------------------------+----------+--------------------------------------+
 ```
 
 ---
 
-## 8. 🔧 Algoritmos e Modelos Implementados
+## 8. 🔧 Algoritmos Implementados
 
-### 1. Regressão Linear — Previsão de Geração de Energia
+*(Implementados por **Victor**)*
 
-- **Funções:** `regressao_eolica()` e `regressao_solar()`
-- **Biblioteca:** `numpy.polyfit` — ajuste por mínimos quadrados (grau 1)
-- **Complexidade:** O(n) para ajuste; O(1) para previsão pontual
+### 1. BFS — Busca em Largura
 
-O ajuste determina os coeficientes `a` (inclinação) e `b` (intercepto) da equação `y = a·x + b` a partir das séries históricas fixas do sistema. Os coeficientes são reutilizados para prever a geração a partir de qualquer entrada de vento ou radiação informada.
+- **Função:** `bfs(colonia, id_origem)`
+- **Estrutura auxiliar:** `collections.deque` (fila FIFO)
+- **Complexidade:** O(V + E)
 
-**Dados históricos de treinamento — Eólico:**
+Percorre os módulos da colônia nível a nível a partir da origem — visita todos os vizinhos diretos antes de avançar para os próximos níveis. Aplicação: verificar conectividade da rede e identificar módulos isolados após falhas.
 
-```text
-+---------------------+---------------------+
-| Velocidade (m/s)    | Energia gerada (kWh)|
-+---------------------+---------------------+
-|        28           |        18,48        |
-|        12           |         7,92        |
-|         8           |         5,28        |
-|        16           |        10,56        |
-|        20           |        13,20        |
-|        18           |        11,88        |
-+---------------------+---------------------+
-```
+### 2. DFS — Busca em Profundidade
 
-Modelo resultante: `y ≈ 0,66 · vento`
+- **Função:** `dfs(colonia, id_origem)`
+- **Estrutura auxiliar:** `list` usada como pilha (LIFO)
+- **Complexidade:** O(V + E)
 
-**Dados históricos de treinamento — Solar:**
+Percorre a rede indo o mais fundo possível em cada ramo antes de retroceder. Base para o algoritmo de identificação de conexões críticas. Aplicação: exploração completa da rede.
 
-```text
-+---------------------+---------------------+
-| Radiação (%)        | Energia gerada (kWh)|
-+---------------------+---------------------+
-|        90           |        27,00        |
-|        70           |        21,00        |
-|        50           |        15,00        |
-|        80           |        24,00        |
-|        30           |         9,00        |
-|        60           |        18,00        |
-+---------------------+---------------------+
-```
+### 3. Dijkstra — Caminho Mínimo
 
-Modelo resultante: `y = 0,30 · radiação`
+- **Função:** `dijkstra(colonia, id_origem, id_destino)`
+- **Estrutura auxiliar:** vetor de custos + vetor de anteriores
+- **Complexidade:** O(V²)
 
-### 2. Análise de Suficiência Energética
+Calcula o caminho de menor custo entre dois módulos usando os pesos reais das arestas (distância, tempo e consumo de comunicação). Aplicação: roteamento eficiente de energia e dados entre módulos.
 
-- **Funções:** `analise_energetica_eolica(estado)` e `analise_energetica_solar(estado)`
-- **Complexidade:** O(1) — comparação direta entre dois valores
+### 4. Conexões Críticas — Algoritmo de Tarjan
 
-Compara a energia prevista pelo modelo (usando vento ou radiação atuais da colônia) com o consumo total em tempo real. Retorna `ALERTA` (prioridade 1) se a geração for inferior ao consumo, ou `SUGESTÃO` (prioridade 3) se for suficiente.
+- **Função:** `conexoes_criticas(colonia)`
+- **Estrutura auxiliar:** vetores `descoberta[]` e `baixo[]` com timestamps
+- **Complexidade:** O(V + E)
 
-### 3. Plano de Módulos por Prioridade — First-fit Decrescente
-
-- **Função:** `modulos_por_prioridade()` — classe `Colonia`
-- **Complexidade:** O(n log n) para ordenação; O(n) para alocação
-
-Ordena os módulos por criticidade decrescente e aloca energia disponível sequencialmente. O primeiro módulo que não couber encerra a alocação — todos os subsequentes são marcados como desligados, garantindo que módulos de maior criticidade tenham prioridade absoluta.
+Identifica todas as pontes do grafo — conexões cuja remoção aumenta o número de componentes conexos. Uma aresta (v, w) é crítica quando `baixo[w] > descoberta[v]`, indicando que não existe caminho alternativo de w para alcançar v. Aplicação: planejamento de redundância e resiliência da rede.
 
 ---
 
-## 9. 📋 Motor de Regras de Decisão
+## 9. 📐 Modelagem Matemática
 
-A função `verificar_colonia(estado: Colonia)` avalia as condições abaixo em sequência. Todas são verificadas a cada chamada, e as recomendações ativadas são acumuladas em uma lista de dicionários retornada ao programa principal.
+*(Desenvolvida por **Bruno**)*
 
-**Estrutura de cada recomendação retornada:**
-
-| Campo | Valores possíveis |
-|---|---|
-| `tipo` | `"ALERTA"`, `"SUGESTÃO"` ou `"INFORMAÇÃO"` |
-| `mensagem` | Texto descritivo para o operador |
-| `prioridade` | `1` (crítica), `2` (importante) ou `3` (sugestão) |
-| `origem` | Identificador do módulo que gerou a recomendação |
-
-**Tabela de Regras:**
+O peso de cada aresta no grafo do Dijkstra é calculado pela função `calcular_peso()` em `mapa.py`, combinando três componentes derivados da distância euclidiana entre as coordenadas dos módulos:
 
 ```text
-+----+---------------------------------------------+----------+------------+
-| #  | Condição de Ativação                        | Tipo     | Prioridade |
-+----+---------------------------------------------+----------+------------+
-|  1 | vento > 0 e radiação = 0                    | SUGESTÃO |     3      |
-|    | → Usar energia eólica; solar indisponível   |          |            |
-+----+---------------------------------------------+----------+------------+
-|  1 | radiação > 0 e vento = 0 (elif)             | SUGESTÃO |     3      |
-|    | → Usar energia solar; eólica indisponível   |          |            |
-+----+---------------------------------------------+----------+------------+
-|  1 | vento = 0 e radiação = 0 (elif)             | SUGESTÃO |     3      |
-|    | → Operar apenas com reserva de baterias     |          |            |
-+----+---------------------------------------------+----------+------------+
-|  2 | energia > 50, consumo < 30, reserva < 49%   | SUGESTÃO |     3      |
-|    | → Armazenar excedente na reserva            |          |            |
-+----+---------------------------------------------+----------+------------+
-|  3 | energia > 99 e reserva > 49%                | SUGESTÃO |     3      |
-|    | → Parar produção solar e eólica             |          |            |
-+----+---------------------------------------------+----------+------------+
-|  4 | energia ≤ 30 e consumo ≥ 50% da disponível  | ALERTA   |     1      |
-|    | → Risco de apagão                           |          |            |
-+----+---------------------------------------------+----------+------------+
-|  5 | radiação < 10%, vento < 10, energia% < 50%  | SUGESTÃO |     3      |
-|    | → Atenção; desligar módulos de baixa crit.  |          |            |
-+----+---------------------------------------------+----------+------------+
-|  6 | energia > 50 e há módulos desligados        | SUGESTÃO |     3      |
-|    | → Energia normalizada, verificar religação  |          |            |
-+----+---------------------------------------------+----------+------------+
-|  7 | Nenhuma regra anterior acionada             | SUGESTÃO |     3      |
-|    | → Sistema dentro dos parâmetros normais     |          |            |
-+----+---------------------------------------------+----------+------------+
-| +1 | Sempre: plano de módulos por prioridade     |INFORMAÇÃO|     2      |
-+----+---------------------------------------------+----------+------------+
++----------------------+-----------------------------------+------------------------------------------+
+| Componente           | Fórmula                           | Descrição                                |
++----------------------+-----------------------------------+------------------------------------------+
+| Distância Euclidiana | d = √((x2-x1)² + (y2-y1)²)       | Distância no mapa entre dois módulos     |
+| Distância Real       | d_m = d × 500                     | Conversão para metros (1 unidade = 500m) |
+| Tempo de Comunicação | t = d × 0.5                       | Tempo de transmissão em segundos         |
+| Consumo Energético   | e = t × 5                         | Consumo em Watts da transmissão          |
+| Peso Total           | w = d_m + t + e                   | Custo total da aresta no grafo           |
++----------------------+-----------------------------------+------------------------------------------+
 ```
 
-> **Nota:** As três condições da Regra 1 são implementadas como `if/elif`, portanto apenas uma delas dispara por execução. As demais regras são `if` independentes e podem se acumular na mesma análise.
+**Análise qualitativa:** O peso composto penaliza simultaneamente módulos distantes (alto `d_m`), rotas de alta latência (alto `t`) e conexões energeticamente custosas (alto `e`). Isso garante que o Dijkstra selecione rotas que minimizam o impacto operacional total da comunicação, e não apenas a distância física — fundamental em um ambiente marciano onde energia é um recurso crítico.
+
+**Justificativa da estrutura da rede:** A rede foi projetada com CTR-01 como nó central (hub) conectado a todos os demais módulos, garantindo conectividade máxima da base. As conexões periféricas criam caminhos alternativos redundantes, eliminando a existência de pontes — verificado automaticamente pela função `conexoes_criticas()`, que retorna lista vazia para a rede padrão da colônia.
 
 ---
 
-## 10. 🧩 Cenário de Teste Padrão
+## 10. 🧩 Módulos da Colônia
 
-Para validação manual, cadastre o seguinte cenário via menu `[1]`:
+*(Definidos por **Michelly** em `sistema.py`)*
 
-**Módulos:**
-
-```text
-+--------+--------------+-------------+----------+
-|   ID   |     Tipo     | Criticidade | Consumo/h|
-+--------+--------------+-------------+----------+
-| MED-01 | Médico       |      5      |    10    |
-| HAB-02 | Habitação    |      1      |    20    |
-| LAB-03 | Laboratório  |      3      |    30    |
-| LOG-04 | Logístico    |      2      |    30    |
-+--------+--------------+-------------+----------+
-```
-
-> Consumo total (todos ligados): **90 kWh/h**
-
-**Sistemas:**
+A colônia é inicializada com 8 módulos predefinidos, cada um com coordenadas fixas no espaço 10×10 do mapa:
 
 ```text
-+---------+-----------+------------------+---------------+
-|  Nome   |   Tipo    | Capacidade Máx.  | Geração Atual |
-+---------+-----------+------------------+---------------+
-| Painel  | Solar     |     30 kWh       |    10 kWh     |
-| Torre   | Eólico    |     20 kWh       |     0 kWh     |
-| Bateria | Reserva   |     50 kWh       |    20 kWh     |
-+---------+-----------+------------------+---------------+
++--------+------------------------+----------+---------+----------+--------+
+|   ID   |          Tipo          |Prioridade|Consumo/h|Cap. Arm. |Coord.  |
++--------+------------------------+----------+---------+----------+--------+
+| HAB-01 | Habitação              |    1     |  120 W  |  40 kW   | (9, 5) |
+| CTR-01 | Centro de Controle     |    2     |  100 W  | 100 kW   | (5, 6) |
+| ENE-01 | Armazenamento Energia  |    3     |   50 W  | 500 kW   | (2, 8) |
+| AGR-01 | Agricultura            |    5     |  130 W  |  20 kW   | (8, 8) |
+| LAB-01 | Laboratório Científico |    4     |  100 W  |  25 kW   | (2, 2) |
+| COM-01 | Comunicação            |    3     |   60 W  |  20 kW   | (5, 3) |
+| MED-01 | Suporte Médico         |    4     |   60 W  |  50 kW   | (8, 2) |
+| OXI-01 | Produção de Oxigênio   |    2     |  180 W  |  50 kW   | (1, 5) |
++--------+------------------------+----------+---------+----------+--------+
 ```
 
-> Energia disponível total: **30 kWh** | Capacidade total: **100 kWh**
+> Prioridade: **1 = mais crítico** (HAB-01, OXI-01) → **5 = menos crítico** (AGR-01)
 
-**Parâmetros ambientais:**
+**Matriz de conexões (grafo não-direcionado):**
 
-- Velocidade do vento: `0 m/s` (sem geração eólica)
-- Radiação solar: `40%` (escala de 0 a 100)
+```text
+        HAB CTR ENE AGR LAB COM MED OXI
+  HAB [  0,  1,  0,  1,  0,  0,  1,  0 ]
+  CTR [  1,  0,  1,  1,  1,  1,  1,  1 ]
+  ENE [  0,  1,  0,  1,  0,  0,  0,  1 ]
+  AGR [  1,  1,  1,  0,  0,  0,  0,  0 ]
+  LAB [  0,  1,  0,  0,  0,  1,  0,  1 ]
+  COM [  0,  1,  0,  0,  1,  0,  1,  0 ]
+  MED [  1,  1,  0,  0,  0,  1,  0,  0 ]
+  OXI [  0,  1,  1,  0,  1,  0,  0,  0 ]
+```
 
-**Resultado esperado de `verificar_colonia()`:**
-
-- Regra 1 (elif): vento = 0 com radiação ativa → `SUGESTÃO` (prioridade 3)
-- Regra 4: consumo (90) ≥ 50% de energia disponível (30) → `ALERTA` (prioridade 1)
-- +1: Plano de módulos por prioridade → `INFORMAÇÃO` (prioridade 2)
-
-**Resultado esperado de `analise_energetica_eolica` (vento = 0 m/s):**
-
-- Energia prevista: ~0 kWh < consumo 90 → `ALERTA` (prioridade 1)
-
-**Resultado esperado de `analise_energetica_solar` (radiação = 40%):**
-
-- Energia prevista: 12,00 kWh < consumo 90 → `ALERTA` (prioridade 1)
+> **CTR-01** é o nó central da rede — único módulo conectado a todos os demais.
 
 ---
 
-*Fim da Documentação Oficial — Equipe DevLounge-FIAP (2026)*
+## 11. 🌱 Sustentabilidade e Governança
+
+*(Reflexão desenvolvida por **Bruno**)*
+
+O SIGIC foi projetado com princípios de sustentabilidade e governança desde sua concepção:
+
+1. **Eficiência energética:** O Dijkstra minimiza o consumo energético ao selecionar rotas de menor custo composto — distância, latência e consumo de transmissão — reduzindo o desperdício de recursos em um ambiente onde energia é escassa.
+
+2. **Manutenção preventiva:** A identificação de conexões críticas permite priorizar reforço e redundância nos pontos mais vulneráveis da rede antes que falhas ocorram, evitando interrupções catastróficas na infraestrutura da colônia.
+
+3. **Planejamento de contingências:** A simulação de falhas possibilita testar cenários adversos sem risco à operação real da colônia, permitindo decisões operacionais mais seguras e embasadas.
+
+4. **Governança tecnológica:** O SIGIC centraliza as decisões operacionais no CTR-01 (Centro de Controle), mas mantém rotas alternativas para todos os módulos através da rede redundante. Isso garante resiliência mesmo em cenários adversos — fundamental para a sobrevivência em ambiente marciano, onde não há suporte externo imediato.
+
+---
+
+## 12. ✅ Testes Automatizados
+
+*(Desenvolvidos por **Victor**)*
+
+O arquivo `testes.py` contém 8 testes independentes que validam o comportamento correto de cada algoritmo sem passar pelo menu interativo:
+
+```bash
+cd src
+python testes.py
+```
+
+**Saída esperada:**
+
+```text
+Executando bateria de testes do SIGIC...
+
+✅ teste_bfs passou
+✅ teste_bfs_origem_invalida passou
+✅ teste_dfs passou
+✅ teste_dijkstra_caminho_direto passou (custo=28.75)
+✅ teste_dijkstra_mesmo_modulo passou
+✅ teste_conexoes_criticas_rede_real passou
+✅ teste_conexoes_criticas_rede_em_linha passou
+✅ teste_matriz_simetrica passou
+
+🎉 Todos os testes passaram!
+```
+
+**Cobertura dos testes:**
+
+```text
++----------------------------------------+--------------------------------------------+
+| Teste                                  | O que valida                               |
++----------------------------------------+--------------------------------------------+
+| teste_bfs                              | BFS visita todos os 8 módulos e começa     |
+|                                        | pela origem correta                        |
+| teste_bfs_origem_invalida              | Módulo inexistente retorna None sem crash  |
+| teste_dfs                              | DFS visita todos os 8 módulos              |
+| teste_dijkstra_caminho_direto          | Caminho direto tem 2 módulos e custo > 0  |
+| teste_dijkstra_mesmo_modulo            | Origem = destino resulta em custo = 0     |
+| teste_conexoes_criticas_rede_real      | Rede da colônia não tem pontes            |
+| teste_conexoes_criticas_rede_em_linha  | Rede A-B-C artificial tem 2 pontes        |
+| teste_matriz_simetrica                 | Matriz de adjacências é simétrica         |
++----------------------------------------+--------------------------------------------+
+```
+
+---
+
+*Documentação Oficial — Equipe SIGIC | FIAP 2026*  
+*Bruno · Victor · Michelly*
